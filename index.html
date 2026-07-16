@@ -66,6 +66,22 @@
       cursor: pointer;
       -webkit-appearance: none; /* iPhone特有の見た目リセット */
     }
+
+    /* 🌹 ページめくりの3Dアニメーション */
+    @keyframes pageTurn {
+      0% { 
+        transform: perspective(1200px) rotateY(-90deg); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: perspective(1200px) rotateY(0deg); 
+        opacity: 1; 
+      }
+    }
+    .page-turn-anim {
+      transform-origin: left center; /* 左側（ノートの綴じ目）を軸にする */
+      animation: pageTurn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
     
   </style>
 </head>
@@ -151,11 +167,17 @@
 
     // データを画面のHTMLにはめ込む関数
     function renderDiary(data) {
-      // ローディングを消して、日記を表示
       document.getElementById("loading").style.display = "none";
-      document.getElementById("diary-content").style.display = "block";
+      
+      const contentDiv = document.getElementById("diary-content");
+      contentDiv.style.display = "block";
 
-      // 日付とプロファイリングを書き換え
+      // 🌹 アニメーションを再発動させるための魔法
+      contentDiv.classList.remove("page-turn-anim");
+      void contentDiv.offsetWidth; // ブラウザに「一瞬リセットしたぞ！」と認識させるおまじない
+      contentDiv.classList.add("page-turn-anim");
+
+      // （👇ここから下は変更なし）
       document.getElementById("display-date").innerText = data.date;
       document.getElementById("display-profile").innerHTML = data.profile;
 
