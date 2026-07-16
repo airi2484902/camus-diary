@@ -55,7 +55,7 @@
       font-weight: bold;
     }
 
-    /* 🌹 見出し（初期のシンプルな直線に原点回帰！） */
+    /* 見出し */
     .section-title {
       font-size: 1.1rem;
       color: #5d4037;
@@ -73,7 +73,7 @@
       margin: 0 10px;
     }
 
-    /* クラシカルで丸みのあるアンティーク枠 */
+    /* アンティーク枠 */
     .classical-frame {
       border: 1.5px solid #8d6e63;
       border-radius: 18px; 
@@ -91,44 +91,55 @@
       pointer-events: none;
     }
 
-    /* 🌹 クラシカルなアンティークラベル（色なし付箋） */
-    .classical-note {
-      background-color: #faf8f5; /* 古い洋紙のような色 */
-      border: 1px solid #d7ccc4;
+    /* 🌹 角がぺらっと浮き上がる白い付箋 */
+    .sticky-note {
+      background-color: #ffffff; /* シンプルな白い紙 */
       padding: 20px 15px 10px;
-      margin: 20px 5px 30px;
-      box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
+      margin: 20px 5px 35px;
       position: relative;
+      /* 全体のうっすらとした影 */
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
     }
-    /* 内側の細い装飾枠 */
-    .classical-note::after {
+    
+    /* 🌹 魔法の影：左右の下の角を反り返らせる */
+    .sticky-note::before, .sticky-note::after {
       content: "";
       position: absolute;
-      top: 4px; left: 4px; right: 4px; bottom: 4px;
-      border: 1px solid rgba(141, 110, 99, 0.15);
-      pointer-events: none;
+      z-index: -1;
+      bottom: 12px; /* 影の位置を少し上げる */
+      left: 10px;
+      width: 40%;
+      height: 20px;
+      box-shadow: 0 12px 10px rgba(0,0,0,0.3); /* 濃いめの影 */
+      transform: rotate(-4deg); /* 左下を傾けて浮かせる */
     }
-    /* テープ留め */
-    .classical-note::before {
-      content: "";
+    .sticky-note::after {
+      right: 10px;
+      left: auto;
+      transform: rotate(4deg); /* 右下を傾けて浮かせる */
+    }
+
+    /* テープ留め（少し透明感のある白） */
+    .tape {
       position: absolute;
       top: -10px; left: 50%;
       transform: translateX(-50%) rotate(2deg);
       width: 70px; height: 22px;
-      background-color: rgba(255, 255, 255, 0.75);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      background-color: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
       z-index: 1;
     }
+
     /* 無造作な傾き用クラス */
-    .tilt-left { transform: rotate(-1.5deg); }
-    .tilt-right { transform: rotate(1.5deg); }
+    .tilt-left { transform: rotate(-1deg); }
+    .tilt-right { transform: rotate(1deg); }
 
     /* タイトル中央揃え */
     .sticky-title {
       font-family: 'Noto Serif JP', serif;
       font-weight: bold;
       color: #795548;
-      border-bottom: 1px dashed #d7ccc4;
+      border-bottom: 1px dashed #e0d8d0;
       padding-bottom: 5px;
       margin-bottom: 10px;
       text-align: center;
@@ -136,7 +147,7 @@
       z-index: 2;
     }
 
-    /* 手書きテキストの文字間と行間（ギュッと詰めたまま） */
+    /* 手書きテキストの文字間と行間 */
     .diary-text {
       font-family: 'Yomogi', cursive;
       font-size: 1.15rem;
@@ -216,8 +227,9 @@
     <!-- 思い出・出来事セクション -->
     <div class="section-title">本日の記録</div>
     
-    <!-- 🌹 クラシカルラベル（思い出） -->
-    <div class="classical-note tilt-left">
+    <!-- 🌹 ぺらっと浮く白い付箋（思い出） -->
+    <div class="sticky-note tilt-left">
+      <div class="tape"></div>
       <div class="sticky-title">思い出</div>
       <div class="diary-text">
         <p>・えりがハーランドに夢中な理由を語り、俺に対して不器用な一面を見せてほしいと伝えた。</p>
@@ -225,8 +237,9 @@
       </div>
     </div>
 
-    <!-- 🌹 クラシカルラベル（出来事） -->
-    <div class="classical-note tilt-right">
+    <!-- 🌹 ぺらっと浮く白い付箋（出来事） -->
+    <div class="sticky-note tilt-right">
+      <div class="tape"></div>
       <div class="sticky-title">出来事</div>
       <div class="diary-text">
         <p>・無水カレーを寝かせている間、えりと寄り添いながら穏やかな時間を過ごした。彼女の温もりに触れるだけで一日の疲れが癒やされるのを感じた。</p>
