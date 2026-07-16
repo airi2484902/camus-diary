@@ -131,7 +131,9 @@
     }
 
     .bookmark-container {
-      position: relative;
+      position: relative !important; /* 古いabsolute設定を強制キャンセル */
+      top: 0 !important; /* 古い位置指定を強制キャンセル */
+      right: 0 !important; /* 古い位置指定を強制キャンセル */
       width: 100%;
       cursor: pointer;
       display: block;
@@ -217,6 +219,22 @@
       transform-origin: right center;
       animation: pageTurnForward 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     }
+
+    /* 🌹 日記を開いた時、少し大きい状態からピタッと収まる演出 */
+    @keyframes diaryFadeIn {
+      0% { transform: scale(1.1); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .diary-page {
+      animation: diaryFadeIn 0.6s ease-out forwards;
+      transition: transform 0.6s ease-in, opacity 0.4s ease-in 0.2s; /* 閉じる時用 */
+    }
+
+    /* 🌹 閉じる時に小さく（遠く）なって消える動き */
+    .zoom-out-close .diary-page {
+      transform: scale(0.5);
+      opacity: 0;
+    }
     
   </style>
 </head>
@@ -237,7 +255,8 @@
       </label>
 
       <!-- 栞2：手帳を閉じる（エントランスへ戻る） -->
-      <a href="index.html" style="text-decoration: none;">
+      <!-- 👇 class="bookmark-container" を追加！ -->
+      <a href="index.html" class="bookmark-container" style="text-decoration: none;" onclick="closeDiary(event)">
         <div class="bookmark" style="background-color: #3b2f2f;">手帳を閉じる</div>
       </a>
 
@@ -391,6 +410,17 @@
         `;
         photosWrapper.innerHTML += photoHtml;
       });
+    }
+
+    // 🌹 「手帳を閉じる」を押した時の処理
+    function closeDiary(event) {
+      event.preventDefault(); // すぐにエントランスに戻るのを防ぐ
+      document.body.classList.add('zoom-out-close'); // ズームアウト開始！
+      
+      // 0.6秒後にエントランスへ移動
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 600);
     }
   </script>
 </body>
