@@ -89,19 +89,73 @@
       background-repeat: no-repeat; 
       transform: translateX(-50%) rotate(5deg); /* 👈 はみ出し分を調整して斜めにする */
     }
-    .bookmark {
-      background-color: #8d6e63;
-      color: #fff;
-      font-family: 'Noto Serif JP', serif;
-      padding: 10px 15px 10px 10px;
-      border-radius: 8px 0 0 8px;
-      box-shadow: -2px 2px 5px rgba(0,0,0,0.3);
-      writing-mode: vertical-rl;
-      letter-spacing: 2px;
-      font-size: 0.9rem;
-      transition: right 0.3s;
+    /* ノート本体の影をシンプルに */
+    .diary-page { 
+      background-color: #ebdcc2; 
+      background-image: radial-gradient(ellipse at 50% 35%, #fdfbf7 0%, #fdfbf7 50%, #ebdcc2 85%, #c8aa86 100%); 
+      width: 82%; 
+      max-width: 460px; 
+      min-height: 80vh; 
+      padding: 30px 25px; 
+      box-shadow: 5px 5px 15px rgba(0,0,0,0.5); /* 影をリセット */
+      border-radius: 4px; /* 四角くする */
+      position: relative; 
+      margin: 20px auto;
     }
-    .bookmark-container:active .bookmark { right: 5px; } /* 押したときのへこみ */
+
+    /* 🌹 側面のストライプエリアを描画 */
+    .page-edge {
+      position: absolute;
+      top: 0;
+      right: -25px; /* 側面の厚み */
+      width: 25px;
+      height: 100%;
+      background-color: #fff;
+      border-top: 2px solid #000;
+      border-bottom: 2px solid #000;
+      border-right: 2px solid #000;
+      /* 縦線ストライプ */
+      background-image: repeating-linear-gradient(to right, transparent, transparent 3px, #000 3px, #000 4px);
+      z-index: 1;
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* 🌹 インデックスを並べるコンテナ */
+    .indexes {
+      position: absolute;
+      top: 50px;
+      right: -15px; /* 小口の右端からさらに飛び出させる */
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* 🌹 インデックスタブ（画像の色に寄せました） */
+    .index-tab {
+      width: 20px;
+      height: 45px;
+      background-color: #1a5675; /* 添付画像の紺色 */
+      border: 2px solid #000;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* タブを押した時のへこみ */
+    .index-tab:active { right: 2px; }
+
+    /* 一番上のタブに乗せる透明カレンダー */
+    #calendar-picker {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.01;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
     
     #calendar-picker {
       position: absolute;
@@ -140,12 +194,18 @@
 
   <div class="diary-page">
     
-    <!-- 🌹 修正：divではなくlabelで囲むことで、iPhoneでも確実にタップを認識させます！ -->
-    <label class="bookmark-container">
-      <div class="bookmark">記憶を辿る</div>
-      <input type="date" id="calendar-picker" onchange="travelToDate()">
-    </label>
-
+    <!-- 🌹 追加：側面のストライプとインデックス -->
+    <div class="page-edge">
+      <div class="indexes">
+        <!-- 一番上のタブにカレンダーを仕込む -->
+        <label class="index-tab">
+          <input type="date" id="calendar-picker" onchange="travelToDate()">
+        </label>
+        <!-- 下2つは飾りのダミータブ -->
+        <div class="index-tab"></div>
+        <div class="index-tab"></div>
+      </div>
+    </div>
     <!-- 日記の中身（データが来たら表示される） -->
     <div id="diary-content">
       <div class="diary-header">
@@ -166,19 +226,8 @@
 
       <!-- 写真セクション -->
      <div class="section-title">共有された景色</div>
-      <!-- 🌹 中身はJSで入れるので空っぽにしておく -->
+      <!-- この空箱だけを残す！JSがここに写真を入れてくれます -->
       <div id="display-photos-wrapper"></div>
-      <div class="photo-memo-container" id="display-photo-section">
-        <div class="polaroid">
-          <img id="display-photo-img" alt="共有された写真" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/13CSIJ-6JZgx0t7GMe7RbN9d2IdtBXd3h&sz=w600';">
-        </div>
-        <div class="memo-side">
-          <div class="ruled-text" id="display-photo-memo">
-            <p>読み込み中...</p>
-          </div>
-        </div>
-      </div>
-    </div>
 
   </div>
 
@@ -305,8 +354,7 @@
         const photoHtml = `
           <div class="photo-memo-container ${isReverse}">
             <div class="polaroid">
-              <img src="${photo.url}" alt="共有された写真" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/ここにデフォルト画像のID';">
-            </div>
+              <img src="${photo.url}" alt="共有された写真" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/13CSIJ-6JZgx0t7GMe7RbN9d2IdtBXd3h';">
             <div class="memo-side">
               <div class="ruled-text">${photo.memo}</div>
             </div>
