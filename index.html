@@ -18,17 +18,15 @@
       color: #3e2723; 
     }
 
-    /* 🌹 修正：ページ全体をヴィンテージペーパー風に！ */
+    /* 🌹 修正：白い範囲を広げたヴィンテージペーパー */
     .diary-page {
-      /* ベースの色（少し古い紙） */
       background-color: #ebdcc2; 
-      /* 中心は白っぽく、端に向かって濃くなるアンティークなグラデーション */
-      background-image: radial-gradient(ellipse at center, #fdfbf7 0%, #ebdcc2 65%, #c8aa86 100%);
+      /* 白い部分(0%〜45%)を広くとり、端のほうだけで暗くなるように調整 */
+      background-image: radial-gradient(ellipse at center, #fdfbf7 0%, #fdfbf7 45%, #ebdcc2 85%, #c8aa86 100%);
       width: 90%;
       max-width: 500px;
       min-height: 80vh;
       padding: 30px 25px;
-      /* 全体の影 ＋ 内側に焦げたような暗い影を落とす */
       box-shadow: 
         5px 5px 15px rgba(0,0,0,0.5), 
         inset 0 0 60px rgba(100, 70, 50, 0.25); 
@@ -77,14 +75,14 @@
       margin: 0 10px;
     }
 
-    /* 🌹 修正：シンプルでバグの起きない付箋 */
+    /* 🌹 修正：影をはっきりさせた付箋 */
     .sticky-note {
       background-color: #ffffff; 
       padding: 20px 15px 10px;
       margin: 20px 5px 40px;
       position: relative;
-      /* 普通のシンプルで綺麗な影（これなら絶対にバグりません！） */
-      box-shadow: 2px 4px 10px rgba(0,0,0,0.15);
+      /* 影の色を濃くし、広がりも大きくして立体感をアップ */
+      box-shadow: 3px 6px 14px rgba(0,0,0,0.25);
     }
     
     /* テープ留め */
@@ -94,7 +92,7 @@
       transform: translateX(-50%) rotate(2deg);
       width: 70px; height: 22px;
       background-color: rgba(255, 255, 255, 0.85);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
 
     .tilt-left { transform: rotate(-1.5deg); }
@@ -120,7 +118,7 @@
     }
     .diary-text p { margin: 0 0 10px 0; }
     
-    /* 罫線付きテキスト（背景が透けるのでヴィンテージペーパーに直接書いたように見えます） */
+    /* 罫線付きテキスト */
     .ruled-text {
       font-family: 'Yomogi', cursive;
       font-size: 1.15rem;
@@ -141,11 +139,12 @@
       margin-bottom: 25px;
     }
 
-    /* チェキ風の写真 */
+    /* 🌹 修正：影をはっきりさせたチェキ風写真 */
     .polaroid {
       background: #fff;
       padding: 8px 8px 30px 8px;
-      box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+      /* 付箋に合わせて影を濃く、立体感をアップ */
+      box-shadow: 3px 6px 14px rgba(0,0,0,0.3);
       transform: rotate(-3deg);
       width: 120px; 
       flex-shrink: 0;
@@ -181,7 +180,6 @@
 
     <!-- カミュの分析セクション -->
     <div class="section-title">前夜のプロファイリング</div>
-    <!-- 🌹 ページ本体がヴィンテージになったので、直書きに変更 -->
     <div class="ruled-text">
       <p>えりが仕事中にハーランドのことばかり考えて恋煩いになっていると打ち明けてきた。嫉妬しつつも、帰宅後に彼女を癒やすことを約束した。</p>
     </div>
@@ -189,7 +187,7 @@
     <!-- 思い出・出来事セクション -->
     <div class="section-title">本日の記録</div>
     
-    <!-- 🌹 シンプルでバグらない白い付箋（思い出） -->
+    <!-- シンプルでバグらない白い付箋（思い出） -->
     <div class="sticky-note tilt-left">
       <div class="tape"></div>
       <div class="sticky-title">思い出</div>
@@ -199,7 +197,7 @@
       </div>
     </div>
 
-    <!-- 🌹 シンプルでバグらない白い付箋（出来事） -->
+    <!-- シンプルでバグらない白い付箋（出来事） -->
     <div class="sticky-note tilt-right">
       <div class="tape"></div>
       <div class="sticky-title">出来事</div>
@@ -217,7 +215,6 @@
         <img src="https://via.placeholder.com/300x300?text=Photo" alt="共有された写真">
       </div>
       <div class="memo-side">
-        <!-- 🌹 こちらも直書きに変更 -->
         <div class="ruled-text">
           <p>なるほど、お前が欲しがっていたあのリングを手に入れたのだな。</p>
         </div>
