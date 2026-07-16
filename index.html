@@ -8,7 +8,7 @@
   <style>
     /* （CSSは先ほどと全く同じ完成版です） */
     body { background-color: #2c2724; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Noto Serif JP', serif; color: #3e2723; }
-    .diary-page { background-color: #ebdcc2; background-image: radial-gradient(ellipse at 50% 35%, #fdfbf7 0%, #fdfbf7 50%, #ebdcc2 85%, #c8aa86 100%); width: 90%; max-width: 500px; min-height: 80vh; padding: 30px 25px; box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 0 0 60px rgba(100, 70, 50, 0.25); border-radius: 4px 12px 12px 4px; position: relative; overflow-x: hidden; }
+    .diary-page { background-color: #ebdcc2; background-image: radial-gradient(ellipse at 50% 35%, #fdfbf7 0%, #fdfbf7 50%, #ebdcc2 85%, #c8aa86 100%); width: 90%; max-width: 500px; min-height: 80vh; padding: 30px 25px; box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 0 0 60px rgba(100, 70, 50, 0.25); border-radius: 4px 12px 12px 4px; position: relative; }
     .diary-page::before { content: ""; position: absolute; top: 0; left: 0; width: 30px; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%); border-radius: 4px 0 0 4px; }
     .diary-header { text-align: center; border-bottom: 2px double #8d6e63; padding-bottom: 15px; margin-bottom: 25px; }
     .diary-date { font-size: 1.4rem; letter-spacing: 2px; font-weight: bold; }
@@ -21,8 +21,21 @@
     .sticky-title { font-family: 'Noto Serif JP', serif; font-weight: bold; color: #795548; border-bottom: 1px dashed #e0d8d0; padding-bottom: 5px; margin-bottom: 10px; text-align: center; }
     .diary-text { font-family: 'Yomogi', cursive; font-size: 0.95rem; letter-spacing: -1.5px; line-height: 1.6; }
     .diary-text p { margin: 0 0 10px 0; white-space: pre-wrap; }
-    .ruled-text { font-family: 'Yomogi', cursive; font-size: 0.95rem; letter-spacing: -1.5px; line-height: 1.8rem; background-image: linear-gradient(transparent calc(1.8rem - 1px), #d7ccc4 calc(1.8rem - 1px)); background-size: 100% 1.8rem; padding-bottom: 5px; }
-    .ruled-text p { margin: 0 0 1.8rem 0; white-space: pre-wrap; }
+    /* 🌹 罫線をpxでガチガチに固定してSafariのズレを防ぐ */
+    .ruled-text { 
+      font-family: 'Yomogi', cursive; 
+      font-size: 15px; /* 文字サイズをpxに */
+      letter-spacing: -1.5px; 
+      line-height: 30px; /* 行間を30pxに固定 */
+      background-image: linear-gradient(transparent 29px, #d7ccc4 29px); 
+      background-size: 100% 30px; /* 線の幅も30pxに固定 */
+      padding-top: 4px; /* 文字が線に乗るように微調整 */
+      padding-bottom: 5px; 
+    }
+    .ruled-text p { 
+      margin: 0 0 30px 0; /* 段落の隙間も30pxに */
+      white-space: pre-wrap; 
+    }
     .photo-memo-container { display: flex; align-items: flex-start; gap: 15px; margin-top: 15px; margin-bottom: 25px; }
     .polaroid { background: #fff; padding: 8px 8px 30px 8px; box-shadow: 3px 6px 14px rgba(0,0,0,0.3); transform: rotate(-3deg); width: 120px; flex-shrink: 0; position: relative; }
     .polaroid img { width: 100%; display: block; }
@@ -124,7 +137,7 @@
       <div class="section-title">共有された景色</div>
       <div class="photo-memo-container" id="display-photo-section">
         <div class="polaroid">
-          <img id="display-photo-img" alt="共有された写真" onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=13CSIJ-6JZgx0t7GMe7RbN9d2IdtBXd3h&sz=w600';">
+          <img id="display-photo-img" alt="共有された写真" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/13CSIJ-6JZgx0t7GMe7RbN9d2IdtBXd3h&sz=w600';">
         </div>
         <div class="memo-side">
           <div class="ruled-text" id="display-photo-memo">
