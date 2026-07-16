@@ -18,11 +18,11 @@
       color: #3e2723; 
     }
 
-    /* 🌹 修正：白い範囲を広げたヴィンテージペーパー */
+    /* 🌹 修正：上部だけ白い範囲を広げたヴィンテージペーパー */
     .diary-page {
       background-color: #ebdcc2; 
-      /* 白い部分(0%〜45%)を広くとり、端のほうだけで暗くなるように調整 */
-      background-image: radial-gradient(ellipse at center, #fdfbf7 0%, #fdfbf7 45%, #ebdcc2 85%, #c8aa86 100%);
+      /* 光の中心を「50% 35%（少し上）」にずらし、上半分を白く、下半分をヴィンテージに */
+      background-image: radial-gradient(ellipse at 50% 35%, #fdfbf7 0%, #fdfbf7 50%, #ebdcc2 85%, #c8aa86 100%);
       width: 90%;
       max-width: 500px;
       min-height: 80vh;
@@ -75,7 +75,7 @@
       margin: 0 10px;
     }
 
-    /* 🌹 修正：影をはっきりさせた付箋 */
+    /* シンプルでバグらない付箋 */
     .sticky-note {
       background-color: #ffffff; 
       padding: 20px 15px 10px;
@@ -139,7 +139,7 @@
       margin-bottom: 25px;
     }
 
-    /* 🌹 修正：影をはっきりさせたチェキ風写真 */
+    /* 影をはっきりさせたチェキ風写真 */
     .polaroid {
       background: #fff;
       padding: 8px 8px 30px 8px;
