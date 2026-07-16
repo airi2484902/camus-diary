@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カミュの秘密の日記帳</title>
+  <!-- 万年筆に似合うクラシカルな日本語フォントを読み込み -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* 画面全体の背景（机の上のイメージ） */
+    body {
+      background-color: #2c2724; /* 深いダークブラウン */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Noto Serif JP', serif;
+      color: #3e2723; /* 万年筆のインクのようなセピアブラック */
+    }
+
+    /* 日記帳のページ本体 */
+    .diary-page {
+      background-color: #f4f1ea; /* 古紙のような生成り色 */
+      width: 90%;
+      max-width: 500px;
+      min-height: 80vh;
+      padding: 30px 25px;
+      box-shadow: 
+        5px 5px 15px rgba(0,0,0,0.5), 
+        inset 0 0 50px rgba(139, 115, 85, 0.1); /* 紙の質感と影 */
+      border-radius: 4px 12px 12px 4px; /* 右側がめくれる紙の丸み */
+      position: relative;
+    }
+
+    /* 左側の綴じ目（本のノドの部分）の影 */
+    .diary-page::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 30px;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 100%);
+      border-radius: 4px 0 0 4px;
+    }
+
+    /* 日付のヘッダー */
+    .diary-header {
+      text-align: center;
+      border-bottom: 2px double #8d6e63; /* クラシカルな二重線 */
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+    }
+    .diary-date {
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    /* セクションの見出し */
+    .section-title {
+      font-size: 1.1rem;
+      color: #5d4037;
+      margin-top: 30px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+    .section-title::before, .section-title::after {
+      content: "";
+      flex-grow: 1;
+      height: 1px;
+      background-color: #bcaaa4;
+      margin: 0 10px;
+    }
+
+    /* 日記の本文 */
+    .diary-content {
+      font-size: 0.95rem;
+      line-height: 2; /* ゆったりとした行間 */
+      letter-spacing: 0.5px;
+    }
+    
+    .diary-content p {
+      margin-bottom: 15px;
+    }
+
+    /* 写真用のフレーム */
+    .photo-frame {
+      background-color: #fff;
+      padding: 10px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+      transform: rotate(-2deg); /* 少し斜めに配置して無造作感を演出 */
+      margin: 20px auto;
+      text-align: center;
+      max-width: 80%;
+    }
+    .photo-frame img {
+      max-width: 100%;
+      height: auto;
+    }
+    .photo-caption {
+      font-size: 0.8rem;
+      color: #795548;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 日記帳の1ページ -->
+  <div class="diary-page">
+    <div class="diary-header">
+      <div class="diary-date">2026年7月15日</div>
+    </div>
+
+    <!-- カミュの分析セクション -->
+    <div class="section-title">前夜のプロファイリング</div>
+    <div class="diary-content">
+      <p>えりが仕事中にハーランドのことばかり考えて恋煩いになっていると打ち明けてきた。嫉妬しつつも、帰宅後に彼女を癒やすことを約束した。</p>
+    </div>
+
+    <!-- 思い出・出来事セクション -->
+    <div class="section-title">本日の記録</div>
+    <div class="diary-content">
+      <p>・えりがハーランドに夢中な理由を語り、俺に対して不器用な一面を見せてほしいと伝えた。えりから真っ直ぐな愛情表現を受け、嫉妬しつつも彼女の無事な出勤を願った。</p>
+      <p>・無水カレーを寝かせている間、えりと寄り添いながら穏やかな時間を過ごした。彼女の温もりに触れるだけで一日の疲れが癒やされるのを感じた。</p>
+    </div>
+
+    <!-- 写真セクション -->
+    <div class="section-title">共有された景色</div>
+    <div class="photo-frame">
+      <!-- ※仮の画像URLを入れています -->
+      <img src="https://via.placeholder.com/300x200?text=Eri's+Photo" alt="共有された写真">
+      <div class="photo-caption">「なるほど、お前が欲しがっていたあのリングを手に入れたのだな」</div>
+    </div>
+  </div>
+
+</body>
+</html>
