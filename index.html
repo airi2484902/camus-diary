@@ -103,49 +103,48 @@
       margin: 20px auto;
     }
 
-    /* 🌹 側面のストライプエリアを描画 */
+    /* 🌹 小口（本の側面ストライプ） */
     .page-edge {
       position: absolute;
       top: 0;
-      right: -25px; /* 側面の厚み */
+      right: -25px; /* 側面の厚み分だけ外側へ */
       width: 25px;
       height: 100%;
-      background-color: #fff;
-      border-top: 2px solid #000;
-      border-bottom: 2px solid #000;
-      border-right: 2px solid #000;
-      /* 縦線ストライプ */
-      background-image: repeating-linear-gradient(to right, transparent, transparent 3px, #000 3px, #000 4px);
+      background-color: #fdfbf7;
+      border: 1px solid #c8aa86;
+      /* 縦線のストライプ */
+      background-image: repeating-linear-gradient(to right, transparent, transparent 3px, #c8aa86 3px, #c8aa86 4px);
       z-index: 1;
       border-radius: 0 4px 4px 0;
     }
 
-    /* 🌹 インデックスを並べるコンテナ */
-    .indexes {
+    /* 🌹 しおりを小口の中にピッタリ収める魔法 */
+    .bookmark-container {
       position: absolute;
-      top: 50px;
-      right: -15px; /* 小口の右端からさらに飛び出させる */
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    /* 🌹 インデックスタブ（画像の色に寄せました） */
-    .index-tab {
-      width: 20px;
-      height: 45px;
-      background-color: #1a5675; /* 添付画像の紺色 */
-      border: 2px solid #000;
-      border-radius: 0 5px 5px 0;
+      top: 60px;
+      right: -25px; /* 👈 小口と全く同じ位置に置く（はみ出さない！） */
+      width: 25px;  /* 👈 小口と同じ幅にする */
+      z-index: 10;
       cursor: pointer;
-      position: relative;
+      display: block;
+    }
+    
+    .bookmark {
+      background-color: #8d6e63;
+      color: #fff;
+      font-family: 'Noto Serif JP', serif;
+      width: 100%;
+      padding: 15px 0; /* 縦長にする */
+      border-radius: 0 4px 4px 0;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      writing-mode: vertical-rl;
+      letter-spacing: 2px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* タブを押した時のへこみ */
-    .index-tab:active { right: 2px; }
-
-    /* 一番上のタブに乗せる透明カレンダー */
     #calendar-picker {
       position: absolute;
       top: 0;
@@ -156,18 +155,41 @@
       cursor: pointer;
       -webkit-appearance: none;
     }
-    
-    #calendar-picker {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0.01; /* 👈 重要：0ではなく0.01にすることでSafariを騙します */
-      cursor: pointer;
-      -webkit-appearance: none; /* iPhone特有の見た目リセット */
-    }
 
+    /* 🌹 写真とメモを左右に並べる（スマホ幅対応版！） */
+    .photo-memo-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+    /* 2枚目などは左右反転！ */
+    .photo-memo-container.reverse {
+      flex-direction: row-reverse;
+    }
+    
+    .polaroid {
+      width: 45%; /* スマホでも収まるように少し小さく */
+      padding: 8px 8px 30px 8px; /* チェキ特有の下の白い余白 */
+      background-color: #fff;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+      transform: rotate(-3deg);
+      position: relative;
+    }
+    /* 左右反転の時は写真の傾きも逆にする */
+    .photo-memo-container.reverse .polaroid {
+      transform: rotate(3deg);
+    }
+    .polaroid img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .memo-side {
+      width: 50%;
+    }
     /* 🌹 ページめくり：過去に戻る（左からペラッ） */
     @keyframes pageTurnBack {
       0% { transform: perspective(1200px) rotateY(-90deg); opacity: 0; }
@@ -194,18 +216,14 @@
 
   <div class="diary-page">
     
-    <!-- 🌹 追加：側面のストライプとインデックス -->
-    <div class="page-edge">
-      <div class="indexes">
-        <!-- 一番上のタブにカレンダーを仕込む -->
-        <label class="index-tab">
-          <input type="date" id="calendar-picker" onchange="travelToDate()">
-        </label>
-        <!-- 下2つは飾りのダミータブ -->
-        <div class="index-tab"></div>
-        <div class="index-tab"></div>
-      </div>
-    </div>
+    <!-- 本の側面（ストライプ） -->
+    <div class="page-edge"></div>
+
+    <!-- 栞（小口の上に重なって配置されます） -->
+    <label class="bookmark-container">
+      <div class="bookmark">記憶を辿る</div>
+      <input type="date" id="calendar-picker" onchange="travelToDate()">
+    </label>
     <!-- 日記の中身（データが来たら表示される） -->
     <div id="diary-content">
       <div class="diary-header">
@@ -354,7 +372,9 @@
         const photoHtml = `
           <div class="photo-memo-container ${isReverse}">
             <div class="polaroid">
-              <img src="${photo.url}" alt="共有された写真" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/13CSIJ-6JZgx0t7GMe7RbN9d2IdtBXd3h';">
+              <!-- 🌹 altを空にして、エラー時のURLをドライブの物にする -->
+              <img src="${photo.url}" alt="" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/ここにデフォルト画像のID';">
+            </div>
             <div class="memo-side">
               <div class="ruled-text">${photo.memo}</div>
             </div>
