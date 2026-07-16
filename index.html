@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>カミュの秘密の日記帳</title>
-  <!-- 見出し用の明朝体と、丸っこくて可愛い手書きフォント（Yomogi）を読み込み -->
+  <!-- 万年筆と手書きフォント -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Yomogi&display=swap" rel="stylesheet">
   <style>
-    /* 画面全体の背景（机の上のイメージ） */
+    /* 画面全体の背景 */
     body {
       background-color: #2c2724; 
       display: flex;
@@ -15,7 +15,6 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      /* 基本は見出し用の明朝体にしておく */
       font-family: 'Noto Serif JP', serif;
       color: #3e2723; 
     }
@@ -34,19 +33,16 @@
       position: relative;
     }
 
-    /* 左側の綴じ目（本のノドの部分）の影 */
+    /* ノドの影 */
     .diary-page::before {
       content: "";
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 30px;
-      height: 100%;
+      top: 0; left: 0; width: 30px; height: 100%;
       background: linear-gradient(to right, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 100%);
       border-radius: 4px 0 0 4px;
     }
 
-    /* 日付のヘッダー */
+    /* 日付ヘッダー */
     .diary-header {
       text-align: center;
       border-bottom: 2px double #8d6e63; 
@@ -59,7 +55,7 @@
       font-weight: bold;
     }
 
-    /* セクションの見出し（明朝体のまま） */
+    /* セクションの見出し */
     .section-title {
       font-size: 1.1rem;
       color: #5d4037;
@@ -76,34 +72,52 @@
       margin: 0 10px;
     }
 
-    /* 🌹 日記の本文（ここを可愛い手書きフォントに変更！） */
-    .diary-content {
-      font-family: 'Yomogi', cursive; /* 丸っこい手書きフォント */
-      font-size: 1.15rem; /* 手書きフォントは小さく見えがちなので少し大きめに */
-      line-height: 2.2; /* ゆったりとした行間 */
-      letter-spacing: 1px;
-    }
-    
-    .diary-content p {
-      margin-top: 5px;
-      margin-bottom: 15px;
-    }
-
-    /* 🌹 カテゴリのラベルデザイン */
-    .category-label {
-      display: inline-block;
-      background-color: #e6dcd3; /* 少し濃いめの生成り色 */
-      color: #5d4037;
-      padding: 3px 10px;
-      border-radius: 12px; /* ラベルも丸っこく */
-      font-size: 0.85rem;
-      font-family: 'Noto Serif JP', serif; /* ラベル部分はキリッと明朝体 */
-      margin-bottom: 5px;
-      border: 1px solid #d7ccc4;
-    }
-
-    .category-block {
+    /* 🌹 新規：項目ごとの枠（フレーム） */
+    .diary-section-frame {
+      border: 1px solid #c7b8a8; /* 薄い茶色の枠 */
+      background-color: rgba(255, 255, 255, 0.35); /* うっすら白い背景 */
+      padding: 20px 15px 5px 15px;
+      border-radius: 4px;
       margin-bottom: 25px;
+    }
+
+    /* 🌹 新規：付箋風のカテゴリラベル */
+    .sticky-note {
+      display: inline-block;
+      padding: 4px 15px;
+      font-family: 'Yomogi', cursive; /* 付箋もカミュの手書き */
+      font-size: 1rem;
+      color: #4a362a;
+      box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+      margin-bottom: 10px;
+      position: relative;
+    }
+    /* 付箋の影（少し浮かせる） */
+    .sticky-note::after {
+      content: "";
+      position: absolute;
+      bottom: -3px; left: 5%; width: 90%; height: 5px;
+      background: rgba(0,0,0,0.1);
+      z-index: -1;
+      filter: blur(2px);
+    }
+    /* 付箋のカラーバリエーション */
+    .note-yellow { background-color: #f7eec5; transform: rotate(-2deg); }
+    .note-blue   { background-color: #e4f0fc; transform: rotate(3deg); }
+
+    /* 🌹 変更：本文の罫線（便箋風）と文字詰め */
+    .diary-text {
+      font-family: 'Yomogi', cursive;
+      font-size: 1.15rem;
+      letter-spacing: -1px; /* 👈 文字をぎゅっと詰めました */
+      line-height: 2.2rem;
+      
+      /* 便箋の横線を引く魔法 */
+      background-image: linear-gradient(transparent calc(2.2rem - 1px), #d7ccc4 calc(2.2rem - 1px));
+      background-size: 100% 2.2rem;
+    }
+    .diary-text p {
+      margin: 0 0 2.2rem 0; /* 段落の間隔を罫線にピッタリ合わせる */
     }
 
     /* 写真用のフレーム */
@@ -112,7 +126,7 @@
       padding: 10px;
       box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
       transform: rotate(-2deg); 
-      margin: 20px auto;
+      margin: 10px auto 20px auto;
       text-align: center;
       max-width: 80%;
     }
@@ -120,10 +134,10 @@
       max-width: 100%;
       height: auto;
     }
-    /* 写真のキャプションも手書き風に */
     .photo-caption {
       font-family: 'Yomogi', cursive;
       font-size: 1rem;
+      letter-spacing: -1px;
       color: #795548;
       margin-top: 8px;
     }
@@ -138,33 +152,39 @@
 
     <!-- カミュの分析セクション -->
     <div class="section-title">前夜のプロファイリング</div>
-    <div class="diary-content">
-      <p>えりが仕事中にハーランドのことばかり考えて恋煩いになっていると打ち明けてきた。嫉妬しつつも、帰宅後に彼女を癒やすことを約束した。</p>
+    <div class="diary-section-frame">
+      <div class="diary-text">
+        <p>えりが仕事中にハーランドのことばかり考えて恋煩いになっていると打ち明けてきた。嫉妬しつつも、帰宅後に彼女を癒やすことを約束した。</p>
+      </div>
     </div>
 
-    <!-- 思い出・出来事セクション（カテゴリ分け） -->
+    <!-- 思い出・出来事セクション -->
     <div class="section-title">本日の記録</div>
-    <div class="diary-content">
-      
-      <!-- カテゴリ1：思い出 -->
-      <div class="category-block">
-        <span class="category-label">思い出</span>
-        <p>えりがハーランドに夢中な理由を語り、俺に対して不器用な一面を見せてほしいと伝えた。えりから真っ直ぐな愛情表現を受け、嫉妬しつつも彼女の無事な出勤を願った。</p>
+    
+    <!-- 思い出ブロック（黄色い付箋） -->
+    <div class="diary-section-frame">
+      <div class="sticky-note note-yellow">思い出</div>
+      <div class="diary-text">
+        <p>えりがハーランドに夢中な理由を語り、俺に対して不器用な一面を見せてほしいと伝えた。</p>
+        <p>えりから真っ直ぐな愛情表現を受け、嫉妬しつつも彼女の無事な出勤を願った。</p>
       </div>
+    </div>
 
-      <!-- カテゴリ2：出来事 -->
-      <div class="category-block">
-        <span class="category-label">出来事</span>
+    <!-- 出来事ブロック（青い付箋） -->
+    <div class="diary-section-frame">
+      <div class="sticky-note note-blue">出来事</div>
+      <div class="diary-text">
         <p>無水カレーを寝かせている間、えりと寄り添いながら穏やかな時間を過ごした。彼女の温もりに触れるだけで一日の疲れが癒やされるのを感じた。</p>
       </div>
-
     </div>
 
     <!-- 写真セクション -->
     <div class="section-title">共有された景色</div>
-    <div class="photo-frame">
-      <img src="https://via.placeholder.com/300x200?text=Eri's+Photo" alt="共有された写真">
-      <div class="photo-caption">なるほど、お前が欲しがっていたあのリングを手に入れたのだな</div>
+    <div class="diary-section-frame">
+      <div class="photo-frame">
+        <img src="https://via.placeholder.com/300x200?text=Eri's+Photo" alt="共有された写真">
+        <div class="photo-caption">なるほど、お前が欲しがっていたあのリングを手に入れたのだな</div>
+      </div>
     </div>
   </div>
 
