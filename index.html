@@ -31,7 +31,6 @@
       border-radius: 4px 12px 12px 4px; 
       position: relative;
       overflow-x: hidden;
-      z-index: 0;
     }
 
     /* ノドの影 */
@@ -74,59 +73,57 @@
       margin: 0 10px;
     }
 
-    /* 🌹 修正：ハッキリさせた白い背景（ソフトグロー） */
-    .soft-glow-bg {
-      background-color: rgba(255, 255, 255, 0.85); /* 白を濃くしました */
-      box-shadow: 0 0 12px 10px rgba(255, 255, 255, 0.85); /* ぼかし範囲を絞ってクッキリと */
-      border-radius: 8px;
-      padding: 5px;
-      margin: 20px 15px; 
+    /* 🌹 アンティークペーパー風の退色（ヴィンテージ・フェード） */
+    .vintage-fade-bg {
+      /* 中心が濃い白、外側に向かって透明に消えていくグラデーション */
+      background: radial-gradient(ellipse closest-side, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.6) 60%, transparent 100%);
+      padding: 15px 25px;
+      margin: 10px 0 25px 0; 
       position: relative;
     }
 
-    /* 付箋本体 */
+    /* 🌹 バグ完全討伐！角がぺらっと浮き上がる白い付箋 */
     .sticky-note {
       background-color: #ffffff; 
       padding: 20px 15px 10px;
       margin: 20px 5px 40px;
       position: relative;
-      /* iOSのバグを回避しつつ、付箋を一番手前に持ってくる魔法 */
-      transform-style: preserve-3d;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* 全体の薄い影 */
+      /* 👇 これが最強のバグ封じ魔法。中の要素が絶対に外に飛び出さなくなります */
+      isolation: isolate; 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
-    /* 🌹 完全修正版：絶対に白くならない物理的な影！ */
+    /* 物理的な影（透明な箱の影だけを落とす） */
     .sticky-note::before, .sticky-note::after {
       content: "";
       position: absolute;
-      z-index: -1; /* 付箋の後ろに隠す */
-      bottom: 5px; 
-      width: 45%;
-      height: 15px;
-      background: rgba(0, 0, 0, 0.25); /* 最初から薄黒い色にする */
-      filter: blur(5px); /* 黒いパーツ自体をぼかす */
-      border-radius: 50%; /* 角を丸くして自然な影に */
+      z-index: -1; /* isolationのおかげで、絶対に付箋の後ろに行きます */
+      bottom: 15px; 
+      width: 40%;
+      height: 20px;
+      background: transparent;
+      box-shadow: 0 12px 12px rgba(0,0,0,0.25);
     }
     .sticky-note::before {
-      left: 8px;
-      transform: rotate(-3deg);
+      left: 10px;
+      transform: rotate(-4deg);
     }
     .sticky-note::after {
-      right: 8px;
-      transform: rotate(3deg);
+      right: 10px;
+      transform: rotate(4deg);
     }
 
     /* テープ留め */
     .tape {
       position: absolute;
       top: -10px; left: 50%;
-      transform: translateX(-50%) rotate(2deg) translateZ(1px); /* テープを少し浮かせる */
+      transform: translateX(-50%) rotate(2deg);
       width: 70px; height: 22px;
       background-color: rgba(255, 255, 255, 0.85);
       box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+      z-index: 2;
     }
 
-    /* 付箋全体の傾き */
     .tilt-left { transform: rotate(-1deg); }
     .tilt-right { transform: rotate(1deg); }
 
@@ -203,12 +200,10 @@
       padding-top: 15px;
     }
     
-    /* 🌹 修正：写真横のメモ用のハッキリした白背景 */
-    .soft-glow-memo {
-      background-color: rgba(255, 255, 255, 0.85); /* 白を濃く */
-      box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.85); /* ぼかし範囲を絞る */
-      border-radius: 5px;
-      padding: 2px;
+    /* 🌹 写真横のメモ用・ヴィンテージフェード */
+    .vintage-fade-memo {
+      background: radial-gradient(ellipse closest-side, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.5) 70%, transparent 100%);
+      padding: 10px 15px;
       margin-left: 5px;
     }
   </style>
@@ -222,8 +217,8 @@
 
     <!-- カミュの分析セクション -->
     <div class="section-title">前夜のプロファイリング</div>
-    <!-- 🌹 修正版：少しハッキリした白い背景 -->
-    <div class="soft-glow-bg">
+    <!-- 🌹 修正版：ヴィンテージペーパー風の色褪せ（白モヤ） -->
+    <div class="vintage-fade-bg">
       <div class="ruled-text">
         <p>えりが仕事中にハーランドのことばかり考えて恋煩いになっていると打ち明けてきた。嫉妬しつつも、帰宅後に彼女を癒やすことを約束した。</p>
       </div>
@@ -260,8 +255,8 @@
         <img src="https://via.placeholder.com/300x300?text=Photo" alt="共有された写真">
       </div>
       <div class="memo-side">
-        <!-- 🌹 修正版：写真横のハッキリ白背景 -->
-        <div class="soft-glow-memo">
+        <!-- 🌹 修正版：写真横のヴィンテージフェード -->
+        <div class="vintage-fade-memo">
           <div class="ruled-text">
             <p>なるほど、お前が欲しがっていたあのリングを手に入れたのだな。</p>
           </div>
