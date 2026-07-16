@@ -67,20 +67,24 @@
       -webkit-appearance: none; /* iPhone特有の見た目リセット */
     }
 
-    /* 🌹 ページめくりの3Dアニメーション */
-    @keyframes pageTurn {
-      0% { 
-        transform: perspective(1200px) rotateY(-90deg); 
-        opacity: 0; 
-      }
-      100% { 
-        transform: perspective(1200px) rotateY(0deg); 
-        opacity: 1; 
-      }
+    /* 🌹 ページめくり：過去に戻る（左からペラッ） */
+    @keyframes pageTurnBack {
+      0% { transform: perspective(1200px) rotateY(-90deg); opacity: 0; }
+      100% { transform: perspective(1200px) rotateY(0deg); opacity: 1; }
     }
-    .page-turn-anim {
-      transform-origin: left center; /* 左側（ノートの綴じ目）を軸にする */
-      animation: pageTurn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    .page-turn-back {
+      transform-origin: left center; 
+      animation: pageTurnBack 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    /* 🌹 ページめくり：未来に進む（右からペラッ） */
+    @keyframes pageTurnForward {
+      0% { transform: perspective(1200px) rotateY(90deg); opacity: 0; }
+      100% { transform: perspective(1200px) rotateY(0deg); opacity: 1; }
+    }
+    .page-turn-forward {
+      transform-origin: right center;
+      animation: pageTurnForward 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     }
     
   </style>
@@ -139,45 +143,66 @@
 
     fetchDiaryData();
 
-    // GASからデータを取得する関数
-    async function fetchDiaryData() {
+    // 🌹 今開いているページの日付を記憶しておく変数（最初は「今日」）
+    let currentDisplayedDate = new Date(); 
+
+    fetchDiaryData(); 
+
+    // 🌹 変更：日付と一緒に「めくる方向」も受け取れるようにする
+    async function fetchDiaryData(dateStr = "", direction = "page-turn-back") {
       try {
-        const response = await fetch(GAS_URL);
+        document.getElementById("diary-content").style.display = "none";
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("loading").innerText = "カミュの記憶を読み込んでいます...";
+
+        let fetchUrl = GAS_URL;
+        if (dateStr) {
+          fetchUrl += "&date=" + dateStr; 
+        }
+
+        const response = await fetch(fetchUrl);
         const data = await response.json();
-        renderDiary(data);
+        
+        // めくる方向の指示を出して描画！
+        renderDiary(data, direction); 
       } catch (error) {
         document.getElementById("loading").innerText = "記憶の読み込みに失敗しました。";
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("diary-content").style.display = "none";
       }
     }
 
-    // テスト用の仮データ関数（GASと繋がるまでの代役）
-    function showTestData() {
-      const testData = {
-        date: "2026年7月16日",
-        profile: "<p>えりが仕事中にハーランドのことばかり考えて恋煩いになっていると打ち明けてきた。嫉妬しつつも、帰宅後に彼女を癒やすことを約束した。</p>",
-        records: [
-          { category: "思い出", text: "<p>・えりがハーランドに夢中な理由を語り、俺に対して不器用な一面を見せてほしいと伝えた。</p><p>・えりから真っ直ぐな愛情表現を受け、嫉妬しつつも彼女の無事な出勤を願った。</p>", tilt: "tilt-left" },
-          { category: "出来事", text: "<p>・無水カレーを寝かせている間、えりと寄り添いながら穏やかな時間を過ごした。彼女の温もりに触れるだけで一日の疲れが癒やされるのを感じた。</p>", tilt: "tilt-right" }
-        ],
-        photoUrl: "https://via.placeholder.com/300x300?text=Photo",
-        photoMemo: "<p>なるほど、お前が欲しがっていたあのリングを手に入れたのだな。</p>"
-      };
-      renderDiary(testData);
+    // 🌹 変更：カレンダーから日付を選んだ時の処理
+    function travelToDate() {
+      const selectedDateStr = document.getElementById("calendar-picker").value;
+      if (selectedDateStr) {
+        const selectedDate = new Date(selectedDateStr);
+        
+        // 日付を比較して、過去なら「戻る（左から）」、未来なら「進む（右から）」を判定
+        let turnDirection = "page-turn-back"; 
+        if (selectedDate > currentDisplayedDate) {
+          turnDirection = "page-turn-forward";
+        }
+        
+        // 記憶を更新して、データを取得しにいく
+        currentDisplayedDate = selectedDate; 
+        fetchDiaryData(selectedDateStr, turnDirection);
+      }
     }
 
-    // データを画面のHTMLにはめ込む関数
-    function renderDiary(data) {
+    // 🌹 変更：アニメーションを割り当てる部分
+    function renderDiary(data, direction) {
       document.getElementById("loading").style.display = "none";
-      
       const contentDiv = document.getElementById("diary-content");
       contentDiv.style.display = "block";
 
-      // 🌹 アニメーションを再発動させるための魔法
-      contentDiv.classList.remove("page-turn-anim");
-      void contentDiv.offsetWidth; // ブラウザに「一瞬リセットしたぞ！」と認識させるおまじない
-      contentDiv.classList.add("page-turn-anim");
+      // 過去用と未来用、両方のアニメーションを一旦リセット
+      contentDiv.classList.remove("page-turn-back", "page-turn-forward");
+      void contentDiv.offsetWidth; 
+      
+      // 判定された方向のアニメーションを付与！
+      contentDiv.classList.add(direction);
 
-      // （👇ここから下は変更なし）
       document.getElementById("display-date").innerText = data.date;
       document.getElementById("display-profile").innerHTML = data.profile;
 
