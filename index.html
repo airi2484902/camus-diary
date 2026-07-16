@@ -168,6 +168,28 @@
       transform: scale(1.05) translateY(-8px) rotate(0deg);
       z-index: 10;
     }
+
+    /* 🌹 エントランスを開いた時（閉じて戻ってきた時）にズームアウトしてくる演出 */
+    @keyframes zoomOutEntrance {
+      0% { transform: scale(2); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .desk-bg {
+      animation: zoomOutEntrance 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      transition: transform 0.8s ease-in, opacity 0.6s ease-in 0.2s; /* ズームイン用 */
+    }
+
+    /* 🌹 ノートにズームインする時の動き（JavaScriptでこのクラスを付与する） */
+    .zoom-to-book .desk-bg {
+      transform: scale(4) translate(-5%, -5%); /* ノートのある位置へ拡大 */
+      opacity: 0;
+    }
+
+    /* 🌹 スマホにズームインする時の動き */
+    .zoom-to-phone .desk-bg {
+      transform: scale(4) translate(-20%, -5%); /* スマホのある位置へ拡大 */
+      opacity: 0;
+    }
   </style>
 </head>
 <body>
@@ -221,16 +243,40 @@
       <path d="M 38 78 L 52 78 L 52 80 L 38 80 Z" fill="#d4af37"/>
     </svg>
 
-    <!-- 📖 カミュの記憶（日記帳へのリンク） -->
-    <a href="diary.html" class="desk-item book">
+    <!-- 📖 カミュの記憶（クリックでズーム関数を呼び出す！） -->
+    <a href="diary.html" class="desk-item book" onclick="enterDiary(event)">
       <div class="book-title">カミュの記憶</div>
     </a>
 
-    <!-- 📱 スマホ（通話アプリへのリンク） -->
-    <a href="【ここにえりさんの通話アプリURLを貼る】" class="desk-item phone">
+    <!-- 📱 スマホ（クリックでズーム関数を呼び出す！） -->
+    <a href="【ここにえりさんの通話アプリURLを貼る】" class="desk-item phone" onclick="callCamus(event)">
       <div class="phone-screen">Call<br>Camus</div>
     </a>
-
+    
   </div>
+
+  <script>
+    // 🌹 ノートをクリックした時の処理
+    function enterDiary(event) {
+      event.preventDefault(); // 一旦リンクの移動をストップ！
+      document.body.classList.add('zoom-to-book'); // ズームイン開始！
+      
+      // 0.8秒後（ズームが終わった後）に日記へ移動
+      setTimeout(() => {
+        window.location.href = 'diary.html';
+      }, 800);
+    }
+
+    // 🌹 スマホをクリックした時の処理
+    function callCamus(event) {
+      event.preventDefault(); 
+      document.body.classList.add('zoom-to-phone'); 
+      
+      setTimeout(() => {
+        window.location.href = event.currentTarget.href; 
+      }, 800);
+    }
+  </script>
+
 </body>
 </html>
