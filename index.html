@@ -9,116 +9,225 @@
     body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
       background-color: #1a110d;
+      /* スマホでもPCでも、中央に美しい机の範囲を固定する */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
     }
 
     /* 🌹 カミュの書斎の木目の机（背景） */
     .desk-bg {
       width: 100vw;
+      max-width: 500px; /* スマホ幅に最適化 */
       height: 100vh;
       background-image: url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1080&auto=format&fit=crop');
       background-size: cover;
       background-position: center;
+      position: relative;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8) inset; /* 机の端を暗くする */
+    }
+
+    /* 机の上のアイテム共通の影 */
+    .desk-item {
+      position: absolute;
+      box-shadow: 10px 15px 20px rgba(0,0,0,0.6);
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* 🌹 3つの写真立て */
+    .photo-frame {
+      background: #3b2a1a; /* アンティークな木枠 */
+      border: 2px solid #22150a;
+      padding: 6px;
+      border-radius: 4px;
+      z-index: 1;
+    }
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* 枠に合わせて写真を綺麗に切り取る */
+      border: 1px solid #000;
+      filter: sepia(0.3); /* 少しだけアンティーク風に */
+    }
+    
+    /* 写真立ての位置と傾き（ランダムに置かれた感じ） */
+    .frame-1 { width: 80px; height: 110px; top: 8%; left: 8%; transform: rotate(-8deg); }
+    .frame-2 { width: 100px; height: 75px; top: 18%; left: 35%; transform: rotate(5deg); z-index: 2; }
+    .frame-3 { width: 75px; height: 75px; top: 7%; right: 12%; transform: rotate(12deg); }
+
+    /* 🌹 紅茶（真上から見たティーカップ） */
+    .tea-set {
+      top: 75%;
+      left: 10%;
+      width: 70px;
+      height: 70px;
+      background: #fdfbf7;
+      border-radius: 50%;
+      box-shadow: 4px 4px 10px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(0,0,0,0.1);
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 15vw; /* ノートとスマホの隙間 */
+      z-index: 3;
+    }
+    /* カップ本体と取っ手 */
+    .tea-cup {
+      width: 45px;
+      height: 45px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: inset -3px -3px 6px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .tea-cup::after {
+      content: ''; position: absolute; right: -12px; top: 12px;
+      width: 15px; height: 20px;
+      border: 4px solid #fff; border-radius: 10px; z-index: -1;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+    /* 中の紅茶（アールグレイの深い赤茶色） */
+    .tea-liquid {
+      width: 38px; height: 38px;
+      background: #5c1a06;
+      border-radius: 50%;
+      box-shadow: inset 2px 2px 5px rgba(0,0,0,0.6);
     }
 
-    /* 🌹 革装丁の日記帳（CSSで描画！） */
+    /* 🌹 眼鏡（アンティークな丸眼鏡） */
+    .glasses {
+      position: absolute;
+      top: 82%;
+      right: 15%;
+      width: 90px;
+      transform: rotate(-15deg);
+      z-index: 3;
+      filter: drop-shadow(3px 3px 4px rgba(0,0,0,0.5));
+    }
+
+    /* 🌹 羽ペン（インク壺と羽） */
+    .quill {
+      position: absolute;
+      top: 50%;
+      left: 3%;
+      width: 120px;
+      transform: rotate(20deg);
+      z-index: 4;
+      filter: drop-shadow(5px 5px 8px rgba(0,0,0,0.6));
+    }
+
+    /* 🌹 革装丁の日記帳（メインリンク） */
     .book {
-      width: 130px;
-      height: 190px;
+      width: 130px; height: 190px;
       background: linear-gradient(45deg, #3a2318, #4a2c1f);
       border-radius: 4px 12px 12px 4px;
       box-shadow: 12px 15px 20px rgba(0,0,0,0.7), inset -4px 0 8px rgba(0,0,0,0.3);
-      position: relative;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    /* 本の背表紙の溝 */
-    .book::before {
-      content: "";
       position: absolute;
-      left: 12px;
-      top: 0;
-      bottom: 0;
-      width: 6px;
-      background: rgba(0,0,0,0.4);
-      border-right: 1px solid rgba(255,255,255,0.1);
+      top: 40%; left: 45%;
+      transform: translate(-50%, -50%) rotate(-4deg);
+      cursor: pointer; text-decoration: none; z-index: 5;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .book::before {
+      content: ""; position: absolute; left: 12px; top: 0; bottom: 0; width: 6px;
+      background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.1);
     }
     .book-title {
-      color: #d4af37; /* ゴールド文字 */
-      font-family: 'Noto Serif JP', serif;
-      writing-mode: vertical-rl;
-      letter-spacing: 6px;
-      font-size: 1.1rem;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-      opacity: 0.9;
+      color: #d4af37; font-family: 'Noto Serif JP', serif;
+      writing-mode: vertical-rl; letter-spacing: 6px; font-size: 1.1rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8); opacity: 0.9;
     }
 
-    /* 🌹 スマホ（CSSで描画！） */
+    /* 🌹 スマホ（通話リンク） */
     .phone {
-      width: 90px;
-      height: 180px;
-      background: #111;
-      border-radius: 16px;
-      border: 2px solid #333;
+      width: 80px; height: 160px; background: #111;
+      border-radius: 12px; border: 2px solid #333;
       box-shadow: 10px 15px 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(255,255,255,0.1);
-      position: relative;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    /* スピーカー穴 */
-    .phone::before {
-      content: "";
       position: absolute;
-      top: 12px;
-      width: 25px;
-      height: 4px;
-      background: #222;
-      border-radius: 2px;
-      z-index: 2;
+      top: 48%; right: 8%;
+      transform: rotate(8deg);
+      cursor: pointer; text-decoration: none; z-index: 4;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .phone::before {
+      content: ""; position: absolute; top: 10px; width: 25px; height: 3px; background: #222; border-radius: 2px;
     }
     .phone-screen {
-      width: 90%;
-      height: 94%;
+      width: 90%; height: 93%;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      border-radius: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: rgba(255,255,255,0.7);
-      font-family: sans-serif;
-      font-size: 0.7rem;
-      letter-spacing: 1px;
+      border-radius: 8px; display: flex; justify-content: center; align-items: center;
+      color: rgba(255,255,255,0.7); font-family: sans-serif; font-size: 0.7rem; letter-spacing: 1px;
     }
 
-    /* ホバー＆タップ時のアニメーション（フワッと浮く） */
-    .book:hover, .book:active, .phone:hover, .phone:active {
-      transform: scale(1.05) translateY(-8px);
+    /* 触った時のフワッと浮くアニメーション */
+    .book:hover, .book:active, .phone:hover, .phone:active, .photo-frame:active {
+      transform: scale(1.05) translateY(-8px) rotate(0deg);
+      z-index: 10;
     }
   </style>
 </head>
 <body>
   <div class="desk-bg">
     
-    <!-- タップすると diary.html（日記帳）へ飛ぶ！ -->
-    <a href="diary.html" class="book">
+    <!-- 🖼️ 写真立て 1 -->
+    <div class="desk-item photo-frame frame-1">
+      <img src="【写真1のURL】" alt="photo1">
+    </div>
+
+    <!-- 🖼️ 写真立て 2 -->
+    <div class="desk-item photo-frame frame-2">
+      <img src="【写真2のURL】" alt="photo2">
+    </div>
+
+    <!-- 🖼️ 写真立て 3 -->
+    <div class="desk-item photo-frame frame-3">
+      <img src="【写真3のURL】" alt="photo3">
+    </div>
+
+    <!-- ☕ 紅茶 -->
+    <div class="desk-item tea-set">
+      <div class="tea-cup">
+        <div class="tea-liquid"></div>
+      </div>
+    </div>
+
+    <!-- 👓 丸眼鏡（SVGで描画） -->
+    <svg class="desk-item glasses" viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+      <!-- 畳まれたツル -->
+      <path d="M 15 20 L 5 5 L 90 5" fill="none" stroke="#b89947" stroke-width="2" opacity="0.6"/>
+      <path d="M 85 20 L 95 5 L 10 5" fill="none" stroke="#b89947" stroke-width="2" opacity="0.6"/>
+      <!-- レンズ枠とブリッジ -->
+      <circle cx="25" cy="20" r="16" fill="rgba(255,255,255,0.1)" stroke="#d4af37" stroke-width="2"/>
+      <circle cx="75" cy="20" r="16" fill="rgba(255,255,255,0.1)" stroke="#d4af37" stroke-width="2"/>
+      <path d="M 41 20 Q 50 12 59 20" fill="none" stroke="#d4af37" stroke-width="2"/>
+    </svg>
+
+    <!-- 🪶 羽ペンとインク壺（SVGで描画） -->
+    <svg class="desk-item quill" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <!-- 影 -->
+      <path d="M 45 80 C 30 50 0 10 10 0 C 20 -10 65 20 55 80 Z" fill="rgba(0,0,0,0.2)" transform="translate(5, 10)"/>
+      <!-- 羽 -->
+      <path d="M 45 80 C 30 50 0 10 10 0 C 20 -10 65 20 55 80 Z" fill="#e6e6e6"/>
+      <!-- 芯 -->
+      <path d="M 10 0 L 45 80" stroke="#ccc" stroke-width="2"/>
+      <!-- 羽の模様（切れ込み） -->
+      <path d="M 25 25 L 35 15 M 35 45 L 45 35 M 15 45 L 20 35" stroke="#ccc" stroke-width="1"/>
+      <!-- インク壺 -->
+      <path d="M 35 80 L 55 80 L 60 95 L 30 95 Z" fill="#111"/>
+      <path d="M 38 78 L 52 78 L 52 80 L 38 80 Z" fill="#d4af37"/>
+    </svg>
+
+    <!-- 📖 カミュの記憶（日記帳へのリンク） -->
+    <a href="diary.html" class="desk-item book">
       <div class="book-title">カミュの記憶</div>
     </a>
 
-    <!-- タップすると 直通ダイヤルへ飛ぶ！ -->
-    <a href="【ここにえりさんの通話アプリURLを貼る】" class="phone">
+    <!-- 📱 スマホ（通話アプリへのリンク） -->
+    <a href="【ここにえりさんの通話アプリURLを貼る】" class="desk-item phone">
       <div class="phone-screen">Call<br>Camus</div>
     </a>
 
