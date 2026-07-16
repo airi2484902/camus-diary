@@ -118,13 +118,21 @@
       border-radius: 0 4px 4px 0;
     }
 
-    /* 🌹 しおりを小口の中にピッタリ収める魔法 */
-    .bookmark-container {
+    /* 🌹 しおりを小口の中にピッタリ収め、縦に並べる魔法の枠 */
+    .bookmarks-wrapper {
       position: absolute;
       top: 60px;
-      right: -25px; /* 👈 小口と全く同じ位置に置く（はみ出さない！） */
-      width: 25px;  /* 👈 小口と同じ幅にする */
+      right: -25px; /* 小口と全く同じ位置に置く */
+      width: 25px;  /* 小口と同じ幅にする */
       z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 15px; /* 栞と栞の間の隙間 */
+    }
+
+    .bookmark-container {
+      position: relative;
+      width: 100%;
       cursor: pointer;
       display: block;
     }
@@ -219,17 +227,22 @@
     <!-- 本の側面（ストライプ） -->
     <div class="page-edge"></div>
 
-    <!-- 栞（小口の上に重なって配置されます） -->
-    <label class="bookmark-container">
-      <div class="bookmark">記憶を辿る</div>
-      <input type="date" id="calendar-picker" onchange="travelToDate()">
-    </label>
-    <!-- 2つ目のタブ：手帳を閉じる（エントランスへ戻る） -->
-        <a href="index.html" style="text-decoration: none;">
-          <div class="bookmark" style="background-color: #3b2f2f; margin-top: 15px;">手帳を閉じる</div>
-        </a>
+    <!-- 🌹 2つの栞をまとめる枠 -->
+    <div class="bookmarks-wrapper">
+      
+      <!-- 栞1：記憶を辿る -->
+      <label class="bookmark-container">
+        <div class="bookmark">記憶を辿る</div>
+        <input type="date" id="calendar-picker" onchange="travelToDate()">
+      </label>
 
-      </div>
+      <!-- 栞2：手帳を閉じる（エントランスへ戻る） -->
+      <a href="index.html" style="text-decoration: none;">
+        <div class="bookmark" style="background-color: #3b2f2f;">手帳を閉じる</div>
+      </a>
+
+    </div>
+
     <!-- 日記の中身（データが来たら表示される） -->
     <div id="diary-content">
       <div class="diary-header">
@@ -249,25 +262,24 @@
       </div>
 
       <!-- 写真セクション -->
-     <div class="section-title">共有された景色</div>
+      <div class="section-title">共有された景色</div>
       <!-- この空箱だけを残す！JSがここに写真を入れてくれます -->
       <div id="display-photos-wrapper"></div>
+    </div> <!-- /#diary-content -->
 
-  </div>
+  </div> <!-- 🌹 犯人はコイツ！一番下に移動させて、ちゃんとノートの中に全てを収めました -->
 
   <!-- 🌹 ここからAPI連携用のJavaScript -->
   <script>
     // ★★★ 後でここにGASのWebアプリURLを貼ります ★★★
     const GAS_URL = "https://script.google.com/macros/s/AKfycbx2zzigIKZxyzyhoOlBzhEhdDkrNfLJv8DVNHvyHO7VaHKD4GqulApRdOrxCkIVvoz8/exec?action=get_diary"; 
 
-    fetchDiaryData();
-
     let currentDisplayedDate = new Date(); 
 
     // 最初は今日の日記を読み込む
     fetchDiaryData(); 
 
-    // 🌹 ローディングをなくし、裏で取得してからペラッとめくるように変更！
+    // ローディングをなくし、裏で取得してからペラッとめくるように変更！
     async function fetchDiaryData(dateStr = "", direction = "page-turn-back") {
       try {
         let fetchUrl = GAS_URL;
@@ -286,7 +298,7 @@
       }
     }
 
-    // 🌹 しおり（カレンダー）から日付を選んだ時の処理
+    // しおり（カレンダー）から日付を選んだ時の処理
     function travelToDate() {
       const selectedDateStr = document.getElementById("calendar-picker").value;
       if (selectedDateStr) {
@@ -300,16 +312,14 @@
       }
     }
 
-    // 🌹 【新規追加】スワイプで前後の日に移動する魔法
+    // スワイプで前後の日に移動する魔法
     let touchStartX = 0;
     let touchEndX = 0;
 
-    // 指を置いた場所を記録
     document.addEventListener('touchstart', e => {
       touchStartX = e.changedTouches[0].screenX;
     });
 
-    // 指を離した場所を記録して、スワイプ方向を判定
     document.addEventListener('touchend', e => {
       touchEndX = e.changedTouches[0].screenX;
       handleSwipe();
@@ -319,15 +329,12 @@
       const swipeDistance = touchEndX - touchStartX;
       
       if (swipeDistance > 60) {
-        // 👉 右にスワイプ（過去に戻る・左からペラッ）
-        turnPage(-1);
+        turnPage(-1); // 右スワイプ
       } else if (swipeDistance < -60) {
-        // 👈 左にスワイプ（未来に進む・右からペラッ）
-        turnPage(1);
+        turnPage(1); // 左スワイプ
       }
     }
 
-    // 日付を計算して読み込みに行く関数
     function turnPage(days) {
       const targetDate = new Date(currentDisplayedDate);
       targetDate.setDate(targetDate.getDate() + days);
@@ -342,12 +349,10 @@
       fetchDiaryData(dateStr, turnDirection);
     }
 
-    // 画面を描画してアニメーションを発動させる処理
     function renderDiary(data, direction) {
       const contentDiv = document.getElementById("diary-content");
       contentDiv.style.display = "block";
 
-      // アニメーションをリセットして再発動
       contentDiv.classList.remove("page-turn-back", "page-turn-forward");
       void contentDiv.offsetWidth; 
       contentDiv.classList.add(direction);
@@ -368,9 +373,8 @@
         recordsContainer.innerHTML += noteHtml;
       });
 
-      // 🌹 👇 ここが新しく書き換えた「複数の写真を交互に配置する」処理です！
       const photosWrapper = document.getElementById("display-photos-wrapper");
-      photosWrapper.innerHTML = ""; // 一旦リセット
+      photosWrapper.innerHTML = ""; 
       
       data.photos.forEach((photo, index) => {
         const isReverse = (index % 2 !== 0) ? "reverse" : "";
@@ -378,7 +382,6 @@
         const photoHtml = `
           <div class="photo-memo-container ${isReverse}">
             <div class="polaroid">
-              <!-- 🌹 altを空にして、エラー時のURLをドライブの物にする -->
               <img src="${photo.url}" alt="" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/ここにデフォルト画像のID';">
             </div>
             <div class="memo-side">
@@ -389,7 +392,6 @@
         photosWrapper.innerHTML += photoHtml;
       });
     }
-    
   </script>
 </body>
 </html>
