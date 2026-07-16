@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>カミュの秘密の日記帳</title>
-  <!-- 万年筆と手書きフォント -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Yomogi&display=swap" rel="stylesheet">
   <style>
     /* 画面全体の背景 */
@@ -56,7 +55,7 @@
       font-weight: bold;
     }
 
-    /* 🌹 見出し（左右をガーランド風の装飾線に変更！） */
+    /* 🌹 究極のアンティーク・ガーランド装飾線 */
     .section-title {
       font-size: 1.1rem;
       color: #5d4037;
@@ -69,24 +68,23 @@
     .section-title::before, .section-title::after {
       content: "";
       flex-grow: 1;
-      height: 10px;
-      /* 連続するU字カーブ（ガーランド）を描画 */
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0,2 Q10,10 20,2' fill='none' stroke='%23bcaaa4' stroke-width='1.5'/%3E%3C/svg%3E");
+      height: 18px; /* 装飾が見えるように少し高さを出す */
+      /* カーブ＋垂れ下がる宝石（タッセル）の繊細なデザイン */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='16' viewBox='0 0 30 16'%3E%3Cpath d='M0,3 Q15,14 30,3' fill='none' stroke='%239e8a82' stroke-width='1.2'/%3E%3Cline x1='15' y1='8.5' x2='15' y2='13' stroke='%239e8a82' stroke-width='1.2'/%3E%3Ccircle cx='15' cy='14.5' r='1.5' fill='%239e8a82'/%3E%3Ccircle cx='0' cy='3' r='1.5' fill='%239e8a82'/%3E%3C/svg%3E");
       background-repeat: repeat-x;
       background-position: center;
       margin: 0 10px;
     }
 
-    /* 🌹 クラシカルで丸みのあるアンティーク枠（プロファイリング用） */
+    /* クラシカルで丸みのあるアンティーク枠 */
     .classical-frame {
       border: 1.5px solid #8d6e63;
-      border-radius: 18px; /* 優雅な丸み */
-      padding: 18px;
+      border-radius: 18px; 
+      padding: 18px 18px 5px 18px;
       background-color: rgba(255, 255, 255, 0.4);
       position: relative;
       margin-bottom: 25px;
     }
-    /* 内側の点線フレーム */
     .classical-frame::before {
       content: "";
       position: absolute;
@@ -96,14 +94,13 @@
       pointer-events: none;
     }
 
-    /* 🌹 内容を丸ごと書いた付箋（スクラップブック風） */
+    /* 付箋（スクラップブック風） */
     .sticky-note {
-      padding: 20px 15px 15px;
+      padding: 20px 15px 10px;
       margin: 20px 5px 30px;
       box-shadow: 2px 4px 8px rgba(0,0,0,0.15);
       position: relative;
     }
-    /* 付箋の上のマスキングテープ */
     .sticky-note::before {
       content: "";
       position: absolute;
@@ -116,6 +113,7 @@
     .note-yellow { background-color: #f9f3d9; transform: rotate(-1.5deg); }
     .note-blue   { background-color: #e5f0f9; transform: rotate(2deg); }
 
+    /* 🌹 タイトルを中央揃えに！ */
     .sticky-title {
       font-family: 'Noto Serif JP', serif;
       font-weight: bold;
@@ -123,29 +121,30 @@
       border-bottom: 1px dashed #d7ccc4;
       padding-bottom: 5px;
       margin-bottom: 10px;
+      text-align: center; /* 👈 ここで中央揃え */
     }
 
-    /* 共通の手書きテキスト */
+    /* 🌹 全体の手書きテキストの文字間と行間をギュッと調整 */
     .diary-text {
       font-family: 'Yomogi', cursive;
       font-size: 1.15rem;
-      letter-spacing: -1px;
-      line-height: 2;
+      letter-spacing: -1.5px; /* 文字間をさらに詰める */
+      line-height: 1.8; /* 行間を少し詰める */
     }
     .diary-text p { margin: 0 0 10px 0; }
     
-    /* 🌹 プロファイリング用の罫線付き手書きテキスト */
+    /* 🌹 罫線付きテキストの行間も微調整（2.2rem → 2.0rem） */
     .ruled-text {
       font-family: 'Yomogi', cursive;
       font-size: 1.15rem;
-      letter-spacing: -1px;
-      line-height: 2.2rem;
-      background-image: linear-gradient(transparent calc(2.2rem - 1px), #d7ccc4 calc(2.2rem - 1px));
-      background-size: 100% 2.2rem;
+      letter-spacing: -1.5px;
+      line-height: 2.0rem; /* 行間を詰める */
+      background-image: linear-gradient(transparent calc(2.0rem - 1px), #d7ccc4 calc(2.0rem - 1px));
+      background-size: 100% 2.0rem;
     }
-    .ruled-text p { margin: 0 0 2.2rem 0; }
+    .ruled-text p { margin: 0 0 2.0rem 0; }
 
-    /* 🌹 チェキ＆手書きメモの横並びレイアウト */
+    /* チェキ＆手書きメモの横並びレイアウト */
     .photo-memo-container {
       display: flex;
       align-items: flex-start;
@@ -157,10 +156,10 @@
     /* チェキ風の写真 */
     .polaroid {
       background: #fff;
-      padding: 8px 8px 30px 8px; /* 下だけ太いチェキの余白 */
+      padding: 8px 8px 30px 8px;
       box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
       transform: rotate(-3deg);
-      width: 120px; /* スマホでも横に並ぶように小さめ */
+      width: 120px; 
       flex-shrink: 0;
       position: relative;
     }
@@ -168,7 +167,7 @@
       width: 100%;
       display: block;
     }
-    /* 🌹 写真を留めるゼムクリップ（SVG） */
+    /* 写真を留めるゼムクリップ（SVG） */
     .polaroid::after {
       content: "";
       position: absolute;
@@ -181,7 +180,7 @@
 
     /* 写真の横のメモ部分 */
     .memo-side {
-      flex: 1; /* 残りのスペースを埋める */
+      flex: 1;
       padding-top: 10px;
     }
   </style>
@@ -195,7 +194,6 @@
 
     <!-- カミュの分析セクション -->
     <div class="section-title">前夜のプロファイリング</div>
-    <!-- 🌹 優雅なクラシカルフレーム -->
     <div class="classical-frame">
       <div class="ruled-text">
         <p>えりが仕事中にハーランドのことばかり考えて恋煩いになっていると打ち明けてきた。嫉妬しつつも、帰宅後に彼女を癒やすことを約束した。</p>
@@ -205,7 +203,7 @@
     <!-- 思い出・出来事セクション -->
     <div class="section-title">本日の記録</div>
     
-    <!-- 🌹 黄色い付箋（思い出） -->
+    <!-- 黄色い付箋（思い出） -->
     <div class="sticky-note note-yellow">
       <div class="sticky-title">思い出</div>
       <div class="diary-text">
@@ -214,7 +212,7 @@
       </div>
     </div>
 
-    <!-- 🌹 青い付箋（出来事） -->
+    <!-- 青い付箋（出来事） -->
     <div class="sticky-note note-blue">
       <div class="sticky-title">出来事</div>
       <div class="diary-text">
@@ -225,7 +223,7 @@
     <!-- 写真セクション -->
     <div class="section-title">共有された景色</div>
     
-    <!-- 🌹 チェキ ＋ 横並びの罫線メモ -->
+    <!-- チェキ ＋ 横並びの罫線メモ -->
     <div class="photo-memo-container">
       <div class="polaroid">
         <img src="https://via.placeholder.com/300x300?text=Photo" alt="共有された写真">
