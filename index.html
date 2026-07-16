@@ -78,15 +78,15 @@
   <!-- 🌹 ここからAPI連携用のJavaScript -->
   <script>
     // ★★★ 後でここにGASのWebアプリURLを貼ります ★★★
-    const GAS_URL = "YOUR_GAS_WEB_APP_URL_HERE"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbx2zzigIKZxyzyhoOlBzhEhdDkrNfLJv8DVNHvyHO7VaHKD4GqulApRdOrxCkIVvoz8/exec?action=get_diary"; 
 
     // 画面が開かれたら自動で実行される処理
     window.onload = async function() {
       // 実際につなぐ時は下の行の「//」を消して通信させます
-      // await fetchDiaryData(); 
+       await fetchDiaryData(); 
       
       // 今はテスト用の仮データを表示します
-      showTestData();
+      //showTestData();
     };
 
     // GASからデータを取得する関数
