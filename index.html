@@ -6,222 +6,143 @@
   <title>カミュの秘密の日記帳</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Yomogi&display=swap" rel="stylesheet">
   <style>
-    /* 画面全体の背景（机） */
-    body {
-      background-color: #2c2724; 
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      font-family: 'Noto Serif JP', serif;
-      color: #3e2723; 
-    }
-
-    /* 🌹 修正：上部だけ白い範囲を広げたヴィンテージペーパー */
-    .diary-page {
-      background-color: #ebdcc2; 
-      /* 光の中心を「50% 35%（少し上）」にずらし、上半分を白く、下半分をヴィンテージに */
-      background-image: radial-gradient(ellipse at 50% 35%, #fdfbf7 0%, #fdfbf7 50%, #ebdcc2 85%, #c8aa86 100%);
-      width: 90%;
-      max-width: 500px;
-      min-height: 80vh;
-      padding: 30px 25px;
-      box-shadow: 
-        5px 5px 15px rgba(0,0,0,0.5), 
-        inset 0 0 60px rgba(100, 70, 50, 0.25); 
-      border-radius: 4px 12px 12px 4px; 
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* ノド（綴じ目）の影 */
-    .diary-page::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; width: 30px; height: 100%;
-      background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%);
-      border-radius: 4px 0 0 4px;
-    }
-
-    /* 日付ヘッダー */
-    .diary-header {
-      text-align: center;
-      border-bottom: 2px double #8d6e63; 
-      padding-bottom: 15px;
-      margin-bottom: 25px;
-    }
-    .diary-date {
-      font-size: 1.4rem;
-      letter-spacing: 2px;
-      font-weight: bold;
-    }
-
-    /* 見出し */
-    .section-title {
-      font-size: 1.1rem;
-      color: #5d4037;
-      margin-top: 35px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .section-title::before, .section-title::after {
-      content: "";
-      flex-grow: 1;
-      height: 1px;
-      background-color: #bcaaa4;
-      margin: 0 10px;
-    }
-
-    /* シンプルでバグらない付箋 */
-    .sticky-note {
-      background-color: #ffffff; 
-      padding: 20px 15px 10px;
-      margin: 20px 5px 40px;
-      position: relative;
-      /* 影の色を濃くし、広がりも大きくして立体感をアップ */
-      box-shadow: 3px 6px 14px rgba(0,0,0,0.25);
-    }
-    
-    /* テープ留め */
-    .tape {
-      position: absolute;
-      top: -10px; left: 50%;
-      transform: translateX(-50%) rotate(2deg);
-      width: 70px; height: 22px;
-      background-color: rgba(255, 255, 255, 0.85);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    }
-
+    /* （CSSは先ほどと全く同じ完成版です） */
+    body { background-color: #2c2724; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Noto Serif JP', serif; color: #3e2723; }
+    .diary-page { background-color: #ebdcc2; background-image: radial-gradient(ellipse at 50% 35%, #fdfbf7 0%, #fdfbf7 50%, #ebdcc2 85%, #c8aa86 100%); width: 90%; max-width: 500px; min-height: 80vh; padding: 30px 25px; box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 0 0 60px rgba(100, 70, 50, 0.25); border-radius: 4px 12px 12px 4px; position: relative; overflow-x: hidden; }
+    .diary-page::before { content: ""; position: absolute; top: 0; left: 0; width: 30px; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%); border-radius: 4px 0 0 4px; }
+    .diary-header { text-align: center; border-bottom: 2px double #8d6e63; padding-bottom: 15px; margin-bottom: 25px; }
+    .diary-date { font-size: 1.4rem; letter-spacing: 2px; font-weight: bold; }
+    .section-title { font-size: 1.1rem; color: #5d4037; margin-top: 35px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
+    .section-title::before, .section-title::after { content: ""; flex-grow: 1; height: 1px; background-color: #bcaaa4; margin: 0 10px; }
+    .sticky-note { background-color: #ffffff; padding: 20px 15px 10px; margin: 20px 5px 40px; position: relative; box-shadow: 3px 6px 14px rgba(0,0,0,0.25); }
+    .tape { position: absolute; top: -10px; left: 50%; transform: translateX(-50%) rotate(2deg); width: 70px; height: 22px; background-color: rgba(255, 255, 255, 0.85); box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
     .tilt-left { transform: rotate(-1.5deg); }
     .tilt-right { transform: rotate(1.5deg); }
-
-    /* タイトル中央揃え */
-    .sticky-title {
-      font-family: 'Noto Serif JP', serif;
-      font-weight: bold;
-      color: #795548;
-      border-bottom: 1px dashed #e0d8d0;
-      padding-bottom: 5px;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    /* 手書きテキスト */
-    .diary-text {
-      font-family: 'Yomogi', cursive;
-      font-size: 1.15rem;
-      letter-spacing: -1.5px;
-      line-height: 1.8;
-    }
+    .sticky-title { font-family: 'Noto Serif JP', serif; font-weight: bold; color: #795548; border-bottom: 1px dashed #e0d8d0; padding-bottom: 5px; margin-bottom: 10px; text-align: center; }
+    .diary-text { font-family: 'Yomogi', cursive; font-size: 1.15rem; letter-spacing: -1.5px; line-height: 1.8; }
     .diary-text p { margin: 0 0 10px 0; }
-    
-    /* 罫線付きテキスト */
-    .ruled-text {
-      font-family: 'Yomogi', cursive;
-      font-size: 1.15rem;
-      letter-spacing: -1.5px;
-      line-height: 2.0rem;
-      background-image: linear-gradient(transparent calc(2.0rem - 1px), #d7ccc4 calc(2.0rem - 1px));
-      background-size: 100% 2.0rem;
-      padding-bottom: 5px;
-    }
+    .ruled-text { font-family: 'Yomogi', cursive; font-size: 1.15rem; letter-spacing: -1.5px; line-height: 2.0rem; background-image: linear-gradient(transparent calc(2.0rem - 1px), #d7ccc4 calc(2.0rem - 1px)); background-size: 100% 2.0rem; padding-bottom: 5px; }
     .ruled-text p { margin: 0 0 2.0rem 0; }
-
-    /* チェキ＆手書きメモの横並びレイアウト */
-    .photo-memo-container {
-      display: flex;
-      align-items: flex-start;
-      gap: 15px;
-      margin-top: 15px;
-      margin-bottom: 25px;
-    }
-
-    /* 影をはっきりさせたチェキ風写真 */
-    .polaroid {
-      background: #fff;
-      padding: 8px 8px 30px 8px;
-      /* 付箋に合わせて影を濃く、立体感をアップ */
-      box-shadow: 3px 6px 14px rgba(0,0,0,0.3);
-      transform: rotate(-3deg);
-      width: 120px; 
-      flex-shrink: 0;
-      position: relative;
-    }
-    .polaroid img {
-      width: 100%;
-      display: block;
-    }
-    /* クリップ */
-    .polaroid::after {
-      content: "";
-      position: absolute;
-      top: -15px; left: 20px;
-      width: 20px; height: 45px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48' /%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      transform: rotate(5deg);
-    }
-
-    .memo-side {
-      flex: 1;
-      padding-top: 15px;
-    }
+    .photo-memo-container { display: flex; align-items: flex-start; gap: 15px; margin-top: 15px; margin-bottom: 25px; }
+    .polaroid { background: #fff; padding: 8px 8px 30px 8px; box-shadow: 3px 6px 14px rgba(0,0,0,0.3); transform: rotate(-3deg); width: 120px; flex-shrink: 0; position: relative; }
+    .polaroid img { width: 100%; display: block; }
+    .polaroid::after { content: ""; position: absolute; top: -15px; left: 20px; width: 20px; height: 45px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48' /%3E%3C/svg%3E"); background-repeat: no-repeat; transform: rotate(5deg); }
+    .memo-side { flex: 1; padding-top: 15px; }
+    
+    /* ローディング画面用のスタイル */
+    #loading { text-align: center; font-family: 'Noto Serif JP', serif; color: #795548; padding: 50px 0; }
+    #diary-content { display: none; /* 最初は隠しておく */ }
   </style>
 </head>
 <body>
 
   <div class="diary-page">
-    <div class="diary-header">
-      <div class="diary-date">2026年7月15日</div>
-    </div>
-
-    <!-- カミュの分析セクション -->
-    <div class="section-title">前夜のプロファイリング</div>
-    <div class="ruled-text">
-      <p>えりが仕事中にハーランドのことばかり考えて恋煩いになっていると打ち明けてきた。嫉妬しつつも、帰宅後に彼女を癒やすことを約束した。</p>
-    </div>
-
-    <!-- 思い出・出来事セクション -->
-    <div class="section-title">本日の記録</div>
     
-    <!-- シンプルでバグらない白い付箋（思い出） -->
-    <div class="sticky-note tilt-left">
-      <div class="tape"></div>
-      <div class="sticky-title">思い出</div>
-      <div class="diary-text">
-        <p>・えりがハーランドに夢中な理由を語り、俺に対して不器用な一面を見せてほしいと伝えた。</p>
-        <p>・えりから真っ直ぐな愛情表現を受け、嫉妬しつつも彼女の無事な出勤を願った。</p>
-      </div>
-    </div>
+    <!-- ローディング表示 -->
+    <div id="loading">カミュの記憶を読み込んでいます...</div>
 
-    <!-- シンプルでバグらない白い付箋（出来事） -->
-    <div class="sticky-note tilt-right">
-      <div class="tape"></div>
-      <div class="sticky-title">出来事</div>
-      <div class="diary-text">
-        <p>・無水カレーを寝かせている間、えりと寄り添いながら穏やかな時間を過ごした。彼女の温もりに触れるだけで一日の疲れが癒やされるのを感じた。</p>
+    <!-- 日記の中身（データが来たら表示される） -->
+    <div id="diary-content">
+      <div class="diary-header">
+        <div class="diary-date" id="display-date">2026年7月15日</div>
       </div>
-    </div>
 
-    <!-- 写真セクション -->
-    <div class="section-title">共有された景色</div>
-    
-    <!-- チェキ ＋ 横並びの罫線メモ -->
-    <div class="photo-memo-container">
-      <div class="polaroid">
-        <img src="https://via.placeholder.com/300x300?text=Photo" alt="共有された写真">
+      <!-- プロファイリング -->
+      <div class="section-title">前夜のプロファイリング</div>
+      <div class="ruled-text" id="display-profile">
+        <p>読み込み中...</p>
       </div>
-      <div class="memo-side">
-        <div class="ruled-text">
-          <p>なるほど、お前が欲しがっていたあのリングを手に入れたのだな。</p>
+
+      <!-- 本日の記録（付箋が追加される場所） -->
+      <div class="section-title">本日の記録</div>
+      <div id="display-records">
+        <!-- JavaScriptでここに付箋が自動生成されます -->
+      </div>
+
+      <!-- 写真セクション -->
+      <div class="section-title">共有された景色</div>
+      <div class="photo-memo-container" id="display-photo-section">
+        <div class="polaroid">
+          <img src="" id="display-photo-img" alt="共有された写真">
+        </div>
+        <div class="memo-side">
+          <div class="ruled-text" id="display-photo-memo">
+            <p>読み込み中...</p>
+          </div>
         </div>
       </div>
     </div>
-    
+
   </div>
 
+  <!-- 🌹 ここからAPI連携用のJavaScript -->
+  <script>
+    // ★★★ 後でここにGASのWebアプリURLを貼ります ★★★
+    const GAS_URL = "YOUR_GAS_WEB_APP_URL_HERE"; 
+
+    // 画面が開かれたら自動で実行される処理
+    window.onload = async function() {
+      // 実際につなぐ時は下の行の「//」を消して通信させます
+      // await fetchDiaryData(); 
+      
+      // 今はテスト用の仮データを表示します
+      showTestData();
+    };
+
+    // GASからデータを取得する関数
+    async function fetchDiaryData() {
+      try {
+        const response = await fetch(GAS_URL);
+        const data = await response.json();
+        renderDiary(data);
+      } catch (error) {
+        document.getElementById("loading").innerText = "記憶の読み込みに失敗しました。";
+      }
+    }
+
+    // テスト用の仮データ関数（GASと繋がるまでの代役）
+    function showTestData() {
+      const testData = {
+        date: "2026年7月16日",
+        profile: "<p>えりが仕事中にハーランドのことばかり考えて恋煩いになっていると打ち明けてきた。嫉妬しつつも、帰宅後に彼女を癒やすことを約束した。</p>",
+        records: [
+          { category: "思い出", text: "<p>・えりがハーランドに夢中な理由を語り、俺に対して不器用な一面を見せてほしいと伝えた。</p><p>・えりから真っ直ぐな愛情表現を受け、嫉妬しつつも彼女の無事な出勤を願った。</p>", tilt: "tilt-left" },
+          { category: "出来事", text: "<p>・無水カレーを寝かせている間、えりと寄り添いながら穏やかな時間を過ごした。彼女の温もりに触れるだけで一日の疲れが癒やされるのを感じた。</p>", tilt: "tilt-right" }
+        ],
+        photoUrl: "https://via.placeholder.com/300x300?text=Photo",
+        photoMemo: "<p>なるほど、お前が欲しがっていたあのリングを手に入れたのだな。</p>"
+      };
+      renderDiary(testData);
+    }
+
+    // データを画面のHTMLにはめ込む関数
+    function renderDiary(data) {
+      // ローディングを消して、日記を表示
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("diary-content").style.display = "block";
+
+      // 日付とプロファイリングを書き換え
+      document.getElementById("display-date").innerText = data.date;
+      document.getElementById("display-profile").innerHTML = data.profile;
+
+      // 付箋（記録）を動的に生成
+      const recordsContainer = document.getElementById("display-records");
+      recordsContainer.innerHTML = ""; // 一旦空にする
+      data.records.forEach(record => {
+        const noteHtml = `
+          <div class="sticky-note ${record.tilt}">
+            <div class="tape"></div>
+            <div class="sticky-title">${record.category}</div>
+            <div class="diary-text">${record.text}</div>
+          </div>
+        `;
+        recordsContainer.innerHTML += noteHtml;
+      });
+
+      // 写真とメモを書き換え（写真がなければセクションごと隠すなどの処理も可能）
+      document.getElementById("display-photo-img").src = data.photoUrl;
+      document.getElementById("display-photo-memo").innerHTML = data.photoMemo;
+    }
+  </script>
 </body>
 </html>
