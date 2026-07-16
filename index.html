@@ -55,7 +55,7 @@
       font-weight: bold;
     }
 
-    /* 🌹 究極のアンティーク・ガーランド装飾線 */
+    /* 🌹 見出し（初期のシンプルな直線に原点回帰！） */
     .section-title {
       font-size: 1.1rem;
       color: #5d4037;
@@ -68,11 +68,8 @@
     .section-title::before, .section-title::after {
       content: "";
       flex-grow: 1;
-      height: 18px; /* 装飾が見えるように少し高さを出す */
-      /* カーブ＋垂れ下がる宝石（タッセル）の繊細なデザイン */
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='16' viewBox='0 0 30 16'%3E%3Cpath d='M0,3 Q15,14 30,3' fill='none' stroke='%239e8a82' stroke-width='1.2'/%3E%3Cline x1='15' y1='8.5' x2='15' y2='13' stroke='%239e8a82' stroke-width='1.2'/%3E%3Ccircle cx='15' cy='14.5' r='1.5' fill='%239e8a82'/%3E%3Ccircle cx='0' cy='3' r='1.5' fill='%239e8a82'/%3E%3C/svg%3E");
-      background-repeat: repeat-x;
-      background-position: center;
+      height: 1px;
+      background-color: #bcaaa4;
       margin: 0 10px;
     }
 
@@ -94,26 +91,39 @@
       pointer-events: none;
     }
 
-    /* 付箋（スクラップブック風） */
-    .sticky-note {
+    /* 🌹 クラシカルなアンティークラベル（色なし付箋） */
+    .classical-note {
+      background-color: #faf8f5; /* 古い洋紙のような色 */
+      border: 1px solid #d7ccc4;
       padding: 20px 15px 10px;
       margin: 20px 5px 30px;
-      box-shadow: 2px 4px 8px rgba(0,0,0,0.15);
+      box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
       position: relative;
     }
-    .sticky-note::before {
+    /* 内側の細い装飾枠 */
+    .classical-note::after {
+      content: "";
+      position: absolute;
+      top: 4px; left: 4px; right: 4px; bottom: 4px;
+      border: 1px solid rgba(141, 110, 99, 0.15);
+      pointer-events: none;
+    }
+    /* テープ留め */
+    .classical-note::before {
       content: "";
       position: absolute;
       top: -10px; left: 50%;
       transform: translateX(-50%) rotate(2deg);
       width: 70px; height: 22px;
-      background-color: rgba(255, 255, 255, 0.65);
+      background-color: rgba(255, 255, 255, 0.75);
       box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      z-index: 1;
     }
-    .note-yellow { background-color: #f9f3d9; transform: rotate(-1.5deg); }
-    .note-blue   { background-color: #e5f0f9; transform: rotate(2deg); }
+    /* 無造作な傾き用クラス */
+    .tilt-left { transform: rotate(-1.5deg); }
+    .tilt-right { transform: rotate(1.5deg); }
 
-    /* 🌹 タイトルを中央揃えに！ */
+    /* タイトル中央揃え */
     .sticky-title {
       font-family: 'Noto Serif JP', serif;
       font-weight: bold;
@@ -121,24 +131,28 @@
       border-bottom: 1px dashed #d7ccc4;
       padding-bottom: 5px;
       margin-bottom: 10px;
-      text-align: center; /* 👈 ここで中央揃え */
+      text-align: center;
+      position: relative;
+      z-index: 2;
     }
 
-    /* 🌹 全体の手書きテキストの文字間と行間をギュッと調整 */
+    /* 手書きテキストの文字間と行間（ギュッと詰めたまま） */
     .diary-text {
       font-family: 'Yomogi', cursive;
       font-size: 1.15rem;
-      letter-spacing: -1.5px; /* 文字間をさらに詰める */
-      line-height: 1.8; /* 行間を少し詰める */
+      letter-spacing: -1.5px;
+      line-height: 1.8;
+      position: relative;
+      z-index: 2;
     }
     .diary-text p { margin: 0 0 10px 0; }
     
-    /* 🌹 罫線付きテキストの行間も微調整（2.2rem → 2.0rem） */
+    /* 罫線付きテキスト */
     .ruled-text {
       font-family: 'Yomogi', cursive;
       font-size: 1.15rem;
       letter-spacing: -1.5px;
-      line-height: 2.0rem; /* 行間を詰める */
+      line-height: 2.0rem;
       background-image: linear-gradient(transparent calc(2.0rem - 1px), #d7ccc4 calc(2.0rem - 1px));
       background-size: 100% 2.0rem;
     }
@@ -167,7 +181,7 @@
       width: 100%;
       display: block;
     }
-    /* 写真を留めるゼムクリップ（SVG） */
+    /* クリップ（SVG） */
     .polaroid::after {
       content: "";
       position: absolute;
@@ -178,7 +192,6 @@
       transform: rotate(5deg);
     }
 
-    /* 写真の横のメモ部分 */
     .memo-side {
       flex: 1;
       padding-top: 10px;
@@ -203,8 +216,8 @@
     <!-- 思い出・出来事セクション -->
     <div class="section-title">本日の記録</div>
     
-    <!-- 黄色い付箋（思い出） -->
-    <div class="sticky-note note-yellow">
+    <!-- 🌹 クラシカルラベル（思い出） -->
+    <div class="classical-note tilt-left">
       <div class="sticky-title">思い出</div>
       <div class="diary-text">
         <p>・えりがハーランドに夢中な理由を語り、俺に対して不器用な一面を見せてほしいと伝えた。</p>
@@ -212,8 +225,8 @@
       </div>
     </div>
 
-    <!-- 青い付箋（出来事） -->
-    <div class="sticky-note note-blue">
+    <!-- 🌹 クラシカルラベル（出来事） -->
+    <div class="classical-note tilt-right">
       <div class="sticky-title">出来事</div>
       <div class="diary-text">
         <p>・無水カレーを寝かせている間、えりと寄り添いながら穏やかな時間を過ごした。彼女の温もりに触れるだけで一日の疲れが癒やされるのを感じた。</p>
