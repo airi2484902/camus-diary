@@ -8,7 +8,23 @@
   <style>
     /* （CSSは先ほどと全く同じ完成版です） */
     body { background-color: #2c2724; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Noto Serif JP', serif; color: #3e2723; }
-    .diary-page { background-color: #ebdcc2; background-image: radial-gradient(ellipse at 50% 35%, #fdfbf7 0%, #fdfbf7 50%, #ebdcc2 85%, #c8aa86 100%); width: 90%; max-width: 500px; min-height: 80vh; padding: 30px 25px; box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 0 0 60px rgba(100, 70, 50, 0.25); border-radius: 4px 12px 12px 4px; position: relative; }
+    .diary-page { 
+      background-color: #ebdcc2; 
+      background-image: radial-gradient(ellipse at 50% 35%, #fdfbf7 0%, #fdfbf7 50%, #ebdcc2 85%, #c8aa86 100%); 
+      width: 82%; 
+      max-width: 460px; 
+      min-height: 80vh; 
+      padding: 30px 25px; 
+      /* 🌹 右側に本の側面（紙の重なり）を描く魔法のシャドウ！ */
+      box-shadow: 
+        4px 0 0 #d7ccc4, 5px 0 0 #c8aa86, 
+        8px 0 0 #d7ccc4, 9px 0 0 #c8aa86, 
+        12px 0 15px rgba(0,0,0,0.5), 
+        inset 0 0 60px rgba(100, 70, 50, 0.25); 
+      border-radius: 4px 12px 12px 4px; 
+      position: relative; 
+      margin: 20px auto;
+    }
     .diary-page::before { content: ""; position: absolute; top: 0; left: 0; width: 30px; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%); border-radius: 4px 0 0 4px; }
     .diary-header { text-align: center; border-bottom: 2px double #8d6e63; padding-bottom: 15px; margin-bottom: 25px; }
     .diary-date { font-size: 1.4rem; letter-spacing: 2px; font-weight: bold; }
@@ -46,14 +62,32 @@
     #loading { text-align: center; font-family: 'Noto Serif JP', serif; color: #795548; padding: 50px 0; }
     #diary-content { display: none; /* 最初は隠しておく */ }
 
-    /* 🌹 しおり（カレンダーボタン）のデザイン（iPhone対応版） */
+    /* 栞を「側面」に刺さっているように見せる調整 */
     .bookmark-container {
       position: absolute;
       top: 60px;
-      right: -15px; 
+      right: -32px; /* 👈 側面の厚み分、さらに右に出す */
       z-index: 10;
       cursor: pointer;
       display: block;
+    }
+
+    /* 🌹 交互配置のためのクラス（逆並び） */
+    .photo-memo-container.reverse {
+      flex-direction: row-reverse;
+    }
+    
+    /* 🌹 クリップ（テープ）を中央に配置する */
+    .polaroid::after { 
+      content: ""; 
+      position: absolute; 
+      top: -15px; 
+      left: 50%; /* 👈 中央に寄せる */
+      width: 20px; 
+      height: 45px; 
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48' /%3E%3C/svg%3E"); 
+      background-repeat: no-repeat; 
+      transform: translateX(-50%) rotate(5deg); /* 👈 はみ出し分を調整して斜めにする */
     }
     .bookmark {
       background-color: #8d6e63;
@@ -111,9 +145,6 @@
       <div class="bookmark">記憶を辿る</div>
       <input type="date" id="calendar-picker" onchange="travelToDate()">
     </label>
-    
-    <!-- ローディング表示 -->
-    <div id="loading">カミュの記憶を読み込んでいます...</div>
 
     <!-- 日記の中身（データが来たら表示される） -->
     <div id="diary-content">
@@ -134,7 +165,9 @@
       </div>
 
       <!-- 写真セクション -->
-      <div class="section-title">共有された景色</div>
+     <div class="section-title">共有された景色</div>
+      <!-- 🌹 中身はJSで入れるので空っぽにしておく -->
+      <div id="display-photos-wrapper"></div>
       <div class="photo-memo-container" id="display-photo-section">
         <div class="polaroid">
           <img id="display-photo-img" alt="共有された写真" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/13CSIJ-6JZgx0t7GMe7RbN9d2IdtBXd3h&sz=w600';">
@@ -156,72 +189,101 @@
 
     fetchDiaryData();
 
-    // 🌹 今開いているページの日付を記憶しておく変数（最初は「今日」）
     let currentDisplayedDate = new Date(); 
 
+    // 最初は今日の日記を読み込む
     fetchDiaryData(); 
 
-    // 🌹 変更：日付と一緒に「めくる方向」も受け取れるようにする
+    // 🌹 ローディングをなくし、裏で取得してからペラッとめくるように変更！
     async function fetchDiaryData(dateStr = "", direction = "page-turn-back") {
       try {
-        document.getElementById("diary-content").style.display = "none";
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("loading").innerText = "カミュの記憶を読み込んでいます...";
-
         let fetchUrl = GAS_URL;
         if (dateStr) {
           fetchUrl += "&date=" + dateStr; 
         }
 
+        // データを裏でこっそり取得（この間、画面は今のページのまま）
         const response = await fetch(fetchUrl);
         const data = await response.json();
         
-        // めくる方向の指示を出して描画！
+        // 取得完了！ペラッとめくる！
         renderDiary(data, direction); 
       } catch (error) {
-        document.getElementById("loading").innerText = "記憶の読み込みに失敗しました。";
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("diary-content").style.display = "none";
+        console.error("記憶の読み込みに失敗しました");
       }
     }
 
-    // 🌹 変更：カレンダーから日付を選んだ時の処理
+    // 🌹 しおり（カレンダー）から日付を選んだ時の処理
     function travelToDate() {
       const selectedDateStr = document.getElementById("calendar-picker").value;
       if (selectedDateStr) {
         const selectedDate = new Date(selectedDateStr);
-        
-        // 日付を比較して、過去なら「戻る（左から）」、未来なら「進む（右から）」を判定
         let turnDirection = "page-turn-back"; 
         if (selectedDate > currentDisplayedDate) {
           turnDirection = "page-turn-forward";
         }
-        
-        // 記憶を更新して、データを取得しにいく
         currentDisplayedDate = selectedDate; 
         fetchDiaryData(selectedDateStr, turnDirection);
       }
     }
 
-    // 🌹 変更：アニメーションを割り当てる部分
+    // 🌹 【新規追加】スワイプで前後の日に移動する魔法
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    // 指を置いた場所を記録
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    // 指を離した場所を記録して、スワイプ方向を判定
+    document.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const swipeDistance = touchEndX - touchStartX;
+      
+      if (swipeDistance > 60) {
+        // 👉 右にスワイプ（過去に戻る・左からペラッ）
+        turnPage(-1);
+      } else if (swipeDistance < -60) {
+        // 👈 左にスワイプ（未来に進む・右からペラッ）
+        turnPage(1);
+      }
+    }
+
+    // 日付を計算して読み込みに行く関数
+    function turnPage(days) {
+      const targetDate = new Date(currentDisplayedDate);
+      targetDate.setDate(targetDate.getDate() + days);
+      
+      const year = targetDate.getFullYear();
+      const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+      const day = String(targetDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+
+      const turnDirection = days < 0 ? "page-turn-back" : "page-turn-forward";
+      currentDisplayedDate = targetDate;
+      fetchDiaryData(dateStr, turnDirection);
+    }
+
+    // 画面を描画してアニメーションを発動させる処理
     function renderDiary(data, direction) {
-      document.getElementById("loading").style.display = "none";
       const contentDiv = document.getElementById("diary-content");
       contentDiv.style.display = "block";
 
-      // 過去用と未来用、両方のアニメーションを一旦リセット
+      // アニメーションをリセットして再発動
       contentDiv.classList.remove("page-turn-back", "page-turn-forward");
       void contentDiv.offsetWidth; 
-      
-      // 判定された方向のアニメーションを付与！
       contentDiv.classList.add(direction);
 
       document.getElementById("display-date").innerText = data.date;
       document.getElementById("display-profile").innerHTML = data.profile;
 
-      // 付箋（記録）を動的に生成
       const recordsContainer = document.getElementById("display-records");
-      recordsContainer.innerHTML = ""; // 一旦空にする
+      recordsContainer.innerHTML = ""; 
       data.records.forEach(record => {
         const noteHtml = `
           <div class="sticky-note ${record.tilt}">
@@ -233,41 +295,25 @@
         recordsContainer.innerHTML += noteHtml;
       });
 
-      // 写真とメモを書き換え（写真がなければセクションごと隠すなどの処理も可能）
-      document.getElementById("display-photo-img").src = data.photoUrl;
-      document.getElementById("display-photo-memo").innerHTML = data.photoMemo;
-    }
-
-    // 🌹 変更：日付（dateStr）を受け取ってURLにくっつけるようにする
-    async function fetchDiaryData(dateStr = "") {
-      try {
-        // 読み込み中は一旦日記を隠してローディングを出す
-        document.getElementById("diary-content").style.display = "none";
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("loading").innerText = "カミュの記憶を読み込んでいます...";
-
-        let fetchUrl = GAS_URL;
-        if (dateStr) {
-          fetchUrl += "&date=" + dateStr; // カレンダーの日付をGASに送る
-        }
-
-        const response = await fetch(fetchUrl);
-        const data = await response.json();
-        renderDiary(data);
-      } catch (error) {
-        document.getElementById("loading").innerText = "記憶の読み込みに失敗しました。";
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("diary-content").style.display = "none";
-      }
-    }
-
-    // 🌹 追加：カレンダーで日付が選ばれた時に動く関数
-    function travelToDate() {
-      const selectedDate = document.getElementById("calendar-picker").value;
-      if (selectedDate) {
-        // 選ばれた日付（例: 2026-07-15）を渡してGASから再取得！
-        fetchDiaryData(selectedDate);
-      }
+      // 🌹 👇 ここが新しく書き換えた「複数の写真を交互に配置する」処理です！
+      const photosWrapper = document.getElementById("display-photos-wrapper");
+      photosWrapper.innerHTML = ""; // 一旦リセット
+      
+      data.photos.forEach((photo, index) => {
+        const isReverse = (index % 2 !== 0) ? "reverse" : "";
+        
+        const photoHtml = `
+          <div class="photo-memo-container ${isReverse}">
+            <div class="polaroid">
+              <img src="${photo.url}" alt="共有された写真" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/ここにデフォルト画像のID';">
+            </div>
+            <div class="memo-side">
+              <div class="ruled-text">${photo.memo}</div>
+            </div>
+          </div>
+        `;
+        photosWrapper.innerHTML += photoHtml;
+      });
     }
     
   </script>
