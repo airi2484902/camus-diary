@@ -345,8 +345,14 @@
     // 今アプリで開いている日付
     let currentDisplayedDate = new Date(REAL_TODAY); 
 
+    // 🌹 【修正】初回読み込み時も、今日の日付（YYYY-MM-DD）を作ってからGASに渡す！
+    const initYear = currentDisplayedDate.getFullYear();
+    const initMonth = String(currentDisplayedDate.getMonth() + 1).padStart(2, '0');
+    const initDay = String(currentDisplayedDate.getDate()).padStart(2, '0');
+    const initDateStr = `${initYear}-${initMonth}-${initDay}`;
+
     // 初回読み込み
-    fetchDiaryData(); 
+    fetchDiaryData(initDateStr);
 
     // GASからデータを取ってくる関数
     async function fetchDiaryData(dateStr = "") {
