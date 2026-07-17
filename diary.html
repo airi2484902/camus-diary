@@ -360,7 +360,7 @@
         renderDiary(data); 
       } catch (error) {
         console.error("記憶の読み込みに失敗しました");
-        document.getElementById("display-profile").innerHTML = "<p>記憶の彼方に繋がらないようです...</p>";
+        document.getElementById("display-profile").innerHTML = "<p>記憶を上手く取得できないようだ...</p>";
         // エラー時もローディングを消す
         document.getElementById("loading-overlay").style.opacity = "0";
         document.getElementById("diary-content").classList.add("content-ready");
@@ -375,7 +375,7 @@
 
         // 【未来ブロック】
         if (selectedDate > REAL_TODAY) {
-          alert("未来の記憶はまだ紡がれていません。"); 
+          alert("未来の記憶はまだ紡がれておらぬ。"); 
           return;
         }
 
