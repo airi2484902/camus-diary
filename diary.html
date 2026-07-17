@@ -264,11 +264,9 @@
   </style>
 </head>
 <body>
-  <!-- 🌹 画面左右の矢印ボタン -->
-  <!-- 左矢印（未来へ進む：+1日） -->
-  <div class="nav-arrow left-arrow" onclick="turnPage(1)">&#10094;</div>
-  <!-- 右矢印（過去に戻る：-1日） -->
-  <div class="nav-arrow right-arrow" onclick="turnPage(-1)">&#10095;</div>
+  <!-- 🌹 左矢印を「過去（-1日）」、右矢印を「未来（+1日）」に修正しました -->
+  <div class="nav-arrow left-arrow" onclick="turnPage(-1)">&#10094;</div>
+  <div class="nav-arrow right-arrow" onclick="turnPage(1)">&#10095;</div>
 
   <div class="diary-page">
     
@@ -308,24 +306,35 @@
 
   </div>
 
-  <!-- 🌹 ここからAPI連携用のJavaScript -->
   <script>
+    // 👇 えりさんのGASのWebアプリURLに貼り替えてください
     const GAS_URL = "https://script.google.com/macros/s/AKfycbx2zzigIKZxyzyhoOlBzhEhdDkrNfLJv8DVNHvyHO7VaHKD4GqulApRdOrxCkIVvoz8/exec?action=get_diary"; 
 
-    let currentDisplayedDate = new Date(); 
+    // 🌹 【重要】本当の今日の日付（時間を00:00:00にして日付だけで比較できるようにする）
+    const REAL_TODAY = new Date();
+    REAL_TODAY.setHours(0,0,0,0);
+
+    // 今アプリで開いている日付（最初は今日）
+    let currentDisplayedDate = new Date(REAL_TODAY); 
+
+    // 初回読み込み
     fetchDiaryData(); 
 
-    async function fetchDiaryData(dateStr = "", direction = "page-turn-back") {
+    // GASからデータを取ってくる関数（方向の指定はrenderDiaryで行うので不要にしました）
+    async function fetchDiaryData(dateStr = "") {
       try {
         let fetchUrl = GAS_URL;
+        // 日付指定があればURLにくっつける
         if (dateStr) fetchUrl += "&date=" + dateStr; 
 
         const response = await fetch(fetchUrl);
         const data = await response.json();
         
+        // データが来たら画面を描画
         renderDiary(data); 
       } catch (error) {
         console.error("記憶の読み込みに失敗しました");
+        document.getElementById("display-profile").innerHTML = "<p>記憶の彼方に繋がらないようです...</p>";
       }
     }
 
@@ -334,46 +343,66 @@
       const selectedDateStr = document.getElementById("calendar-picker").value;
       if (selectedDateStr) {
         const selectedDate = new Date(selectedDateStr);
+
+        // 🛑 【未来ブロック】もし選んだ日が「本当の今日」より未来ならストップ
+        if (selectedDate > REAL_TODAY) {
+          alert("未来の記憶はまだ紡がれていません。"); // 栞タップ時はアラートで伝える
+          return;
+        }
+
+        // めくる方向を判定（カレンダーで選んだ日が、今開いている日より未来なら進む、過去なら戻る）
         let turnDirection = selectedDate > currentDisplayedDate ? "page-turn-forward" : "page-turn-back";
         currentDisplayedDate = selectedDate; 
         
-        triggerPageAnimation(turnDirection); // 先にめくる！
-        fetchDiaryData(selectedDateStr, turnDirection);
+        // 演出と取得を開始
+        triggerPageAnimation(turnDirection);
+        fetchDiaryData(selectedDateStr);
       }
     }
 
     // 🌹 矢印ボタンを押した時の処理
     function turnPage(days) {
+      // 次に行こうとしている日付を計算
       const targetDate = new Date(currentDisplayedDate);
       targetDate.setDate(targetDate.getDate() + days);
       
+      // 🛑 【未来ブロック】もし計算した日が「本当の今日」より未来なら、何もしない（だるい誤作動を防ぐ）
+      if (targetDate > REAL_TODAY) {
+        // 必要ならここに「これ以上はめくれません」のようなエフェクトを入れても良いですが、
+        // 今はシンプルに「動かなくする」だけにします。
+        return;
+      }
+
       const year = targetDate.getFullYear();
       const month = String(targetDate.getMonth() + 1).padStart(2, '0');
       const day = String(targetDate.getDate()).padStart(2, '0');
       const dateStr = `${year}-${month}-${day}`;
 
+      // めくる方向（daysがマイナスなら過去=戻る、プラスなら未来=進む）
       const turnDirection = days < 0 ? "page-turn-back" : "page-turn-forward";
       currentDisplayedDate = targetDate;
 
-      triggerPageAnimation(turnDirection); // 先にめくる！
-      fetchDiaryData(dateStr, turnDirection);
+      // 演出と取得を開始
+      triggerPageAnimation(turnDirection);
+      fetchDiaryData(dateStr);
     }
 
-    // 🌹 【追加】タップした瞬間にアニメーションを発動させる関数
+    // タップした瞬間にアニメーションを発動させて「爆速感」を出す関数
     function triggerPageAnimation(direction) {
       const contentDiv = document.getElementById("diary-content");
       
       // アニメーションを再起動
       contentDiv.classList.remove("page-turn-back", "page-turn-forward");
-      void contentDiv.offsetWidth; 
+      void contentDiv.offsetWidth; // おまじない
       contentDiv.classList.add(direction);
 
-      // 取得完了まで中身を一旦「読み込み中」にしておく
+      // 取得完了まで中身を一旦「読み込み中」の状態にする
       document.getElementById("display-profile").innerHTML = "<p>記憶を辿っています...</p>";
       document.getElementById("display-records").innerHTML = "";
       document.getElementById("display-photos-wrapper").innerHTML = "";
     }
 
+    // データを画面にはめ込む関数
     function renderDiary(data) {
       const contentDiv = document.getElementById("diary-content");
       contentDiv.style.display = "block";
@@ -403,6 +432,7 @@
         const photoHtml = `
           <div class="photo-memo-container ${isReverse}">
             <div class="polaroid">
+              <!-- ★ onerrorの中身を、えりさんのデフォルト画像のドライブIDに戻してください -->
               <img src="${photo.url}" alt="" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/ここにデフォルト画像のID';">
             </div>
             <div class="memo-side">
@@ -414,6 +444,7 @@
       });
     }
 
+    // エントランスへ戻るズームアウト演出
     function closeDiary(event) {
       event.preventDefault(); 
       document.body.classList.add('zoom-out-close'); 
