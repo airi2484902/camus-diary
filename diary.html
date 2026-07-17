@@ -338,31 +338,32 @@
     // 👇 えりさんのGASのWebアプリURLに貼り替えてください
     const GAS_URL = "https://script.google.com/macros/s/AKfycbx2zzigIKZxyzyhoOlBzhEhdDkrNfLJv8DVNHvyHO7VaHKD4GqulApRdOrxCkIVvoz8/exec?action=get_diary"; 
 
-    // 🌹 【重要】本当の今日の日付（時間を00:00:00にして日付だけで比較できるようにする）
+    // 🌹 本当の今日の日付（時間を00:00:00にして日付だけで比較できるようにする）
     const REAL_TODAY = new Date();
     REAL_TODAY.setHours(0,0,0,0);
 
-    // 今アプリで開いている日付（最初は今日）
+    // 今アプリで開いている日付
     let currentDisplayedDate = new Date(REAL_TODAY); 
 
     // 初回読み込み
     fetchDiaryData(); 
 
-    // GASからデータを取ってくる関数（方向の指定はrenderDiaryで行うので不要にしました）
+    // GASからデータを取ってくる関数
     async function fetchDiaryData(dateStr = "") {
       try {
         let fetchUrl = GAS_URL;
-        // 日付指定があればURLにくっつける
         if (dateStr) fetchUrl += "&date=" + dateStr; 
 
         const response = await fetch(fetchUrl);
         const data = await response.json();
         
-        // データが来たら画面を描画
         renderDiary(data); 
       } catch (error) {
         console.error("記憶の読み込みに失敗しました");
         document.getElementById("display-profile").innerHTML = "<p>記憶の彼方に繋がらないようです...</p>";
+        // エラー時もローディングを消す
+        document.getElementById("loading-overlay").style.opacity = "0";
+        document.getElementById("diary-content").classList.add("content-ready");
       }
     }
 
@@ -372,17 +373,15 @@
       if (selectedDateStr) {
         const selectedDate = new Date(selectedDateStr);
 
-        // 🛑 【未来ブロック】もし選んだ日が「本当の今日」より未来ならストップ
+        // 【未来ブロック】
         if (selectedDate > REAL_TODAY) {
-          alert("未来の記憶はまだ紡がれていません。"); // 栞タップ時はアラートで伝える
+          alert("未来の記憶はまだ紡がれていません。"); 
           return;
         }
 
-        // めくる方向を判定（カレンダーで選んだ日が、今開いている日より未来なら進む、過去なら戻る）
         let turnDirection = selectedDate > currentDisplayedDate ? "page-turn-forward" : "page-turn-back";
         currentDisplayedDate = selectedDate; 
         
-        // 演出と取得を開始
         triggerPageAnimation(turnDirection);
         fetchDiaryData(selectedDateStr);
       }
@@ -390,14 +389,11 @@
 
     // 🌹 矢印ボタンを押した時の処理
     function turnPage(days) {
-      // 次に行こうとしている日付を計算
       const targetDate = new Date(currentDisplayedDate);
       targetDate.setDate(targetDate.getDate() + days);
       
-      // 🛑 【未来ブロック】もし計算した日が「本当の今日」より未来なら、何もしない（だるい誤作動を防ぐ）
+      // 【未来ブロック】
       if (targetDate > REAL_TODAY) {
-        // 必要ならここに「これ以上はめくれません」のようなエフェクトを入れても良いですが、
-        // 今はシンプルに「動かなくする」だけにします。
         return;
       }
 
@@ -406,31 +402,28 @@
       const day = String(targetDate.getDate()).padStart(2, '0');
       const dateStr = `${year}-${month}-${day}`;
 
-      // めくる方向（daysがマイナスなら過去=戻る、プラスなら未来=進む）
       const turnDirection = days < 0 ? "page-turn-back" : "page-turn-forward";
       currentDisplayedDate = targetDate;
 
-      // 演出と取得を開始
       triggerPageAnimation(turnDirection);
       fetchDiaryData(dateStr);
     }
 
-    // 🌹 タップした瞬間にアニメーションを発動させる関数
+    // 🌹 タップした瞬間にアニメーションとローディングを発動
     function triggerPageAnimation(direction) {
       const contentDiv = document.getElementById("diary-content");
       
-      // アニメーションリセット＆中身を透明に戻す（.content-readyを外す）
+      // アニメーションリセット＆中身を透明に戻す
       contentDiv.classList.remove("page-turn-back", "page-turn-forward", "content-ready");
       void contentDiv.offsetWidth; 
       contentDiv.classList.add(direction);
 
-      // ローディング文字をフワッと再表示する
+      // ローディング文字をフワッと再表示
       document.getElementById("loading-overlay").style.opacity = "1";
     }
 
-    // 🌹 データを画面にはめ込む関数
+    // 🌹 データを画面にはめ込み、フワッと表示させる関数
     function renderDiary(data) {
-      // （※この下にある data.date や data.profile などのDOMセット処理はそのまま残してください！）
       const contentDiv = document.getElementById("diary-content");
       contentDiv.style.display = "block";
 
@@ -455,10 +448,11 @@
       
       data.photos.forEach((photo, index) => {
         const isReverse = (index % 2 !== 0) ? "reverse" : "";
+        
         const photoHtml = `
           <div class="photo-memo-container ${isReverse}">
             <div class="polaroid">
-              <img src="${photo.url}" alt="" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/ここにデフォルト画像のID';">
+              <img src="${photo.url}" alt="" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/1uVsiC8a54APPIX-3ca7TcksmC6AX2WIe?hl=ja';">
             </div>
             <div class="memo-side">
               <div class="ruled-text">${photo.memo}</div>
@@ -468,7 +462,7 @@
         photosWrapper.innerHTML += photoHtml;
       });
 
-      // 🌹 【ここから追加】DOMセットが終わったらローディングを消して、中身をフワッと表示！
+      // 🌹 DOMセットが終わったらローディングを消して、中身をフワッと表示！
       document.getElementById("loading-overlay").style.opacity = "0";
       contentDiv.classList.add("content-ready");
     }
