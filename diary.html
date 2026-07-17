@@ -260,6 +260,34 @@
     }
     .left-arrow { left: 10px; }
     .right-arrow { right: 10px; }
+
+    /* 🌹 読み込み中の文字（本の中央に配置） */
+    #loading-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.1rem;
+      color: #6d4c41; /* 手帳に馴染むインク色 */
+      letter-spacing: 0.1em;
+      transition: opacity 0.4s ease;
+      pointer-events: none; /* クリックの邪魔にならないようにする */
+      z-index: 10;
+    }
+
+    /* 🌹 日記の中身（最初は透明にして、白紙のチラつきを防ぐ） */
+    #diary-content {
+      opacity: 0; 
+    }
+
+    /* 🌹 データ取得後に中身が下からフワッと現れるアニメーション */
+    .content-ready {
+      animation: contentFadeIn 0.8s ease-out forwards;
+    }
+    @keyframes contentFadeIn {
+      0% { opacity: 0; transform: translateY(5px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
     
   </style>
 </head>
@@ -387,23 +415,22 @@
       fetchDiaryData(dateStr);
     }
 
-    // タップした瞬間にアニメーションを発動させて「爆速感」を出す関数
+    // 🌹 タップした瞬間にアニメーションを発動させる関数
     function triggerPageAnimation(direction) {
       const contentDiv = document.getElementById("diary-content");
       
-      // アニメーションを再起動
-      contentDiv.classList.remove("page-turn-back", "page-turn-forward");
-      void contentDiv.offsetWidth; // おまじない
+      // アニメーションリセット＆中身を透明に戻す（.content-readyを外す）
+      contentDiv.classList.remove("page-turn-back", "page-turn-forward", "content-ready");
+      void contentDiv.offsetWidth; 
       contentDiv.classList.add(direction);
 
-      // 取得完了まで中身を一旦「読み込み中」の状態にする
-      document.getElementById("display-profile").innerHTML = "<p>記憶を辿っています...</p>";
-      document.getElementById("display-records").innerHTML = "";
-      document.getElementById("display-photos-wrapper").innerHTML = "";
+      // ローディング文字をフワッと再表示する
+      document.getElementById("loading-overlay").style.opacity = "1";
     }
 
-    // データを画面にはめ込む関数
+    // 🌹 データを画面にはめ込む関数
     function renderDiary(data) {
+      // （※この下にある data.date や data.profile などのDOMセット処理はそのまま残してください！）
       const contentDiv = document.getElementById("diary-content");
       contentDiv.style.display = "block";
 
@@ -428,11 +455,10 @@
       
       data.photos.forEach((photo, index) => {
         const isReverse = (index % 2 !== 0) ? "reverse" : "";
-        
         const photoHtml = `
           <div class="photo-memo-container ${isReverse}">
             <div class="polaroid">
-              <img src="${photo.url}" alt="" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/13CSIJ-6JZgx0t7GMe7RbN9d2IdtBXd3h';">
+              <img src="${photo.url}" alt="" onerror="this.onerror=null; this.src='https://lh3.googleusercontent.com/d/ここにデフォルト画像のID';">
             </div>
             <div class="memo-side">
               <div class="ruled-text">${photo.memo}</div>
@@ -441,6 +467,10 @@
         `;
         photosWrapper.innerHTML += photoHtml;
       });
+
+      // 🌹 【ここから追加】DOMセットが終わったらローディングを消して、中身をフワッと表示！
+      document.getElementById("loading-overlay").style.opacity = "0";
+      contentDiv.classList.add("content-ready");
     }
 
     // エントランスへ戻るズームアウト演出
