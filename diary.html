@@ -235,125 +235,114 @@
       transform: scale(0.5);
       opacity: 0;
     }
+
+    /* 🌹 画面左右のページめくり矢印 */
+    .nav-arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      background-color: rgba(141, 110, 99, 0.8);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      user-select: none; /* テキスト選択されるのを防ぐ */
+    }
+    .nav-arrow:active {
+      background-color: rgba(100, 70, 50, 1);
+    }
+    .left-arrow { left: 10px; }
+    .right-arrow { right: 10px; }
     
   </style>
 </head>
 <body>
+  <!-- 🌹 画面左右の矢印ボタン -->
+  <!-- 左矢印（未来へ進む：+1日） -->
+  <div class="nav-arrow left-arrow" onclick="turnPage(1)">&#10094;</div>
+  <!-- 右矢印（過去に戻る：-1日） -->
+  <div class="nav-arrow right-arrow" onclick="turnPage(-1)">&#10095;</div>
 
   <div class="diary-page">
     
     <!-- 本の側面（ストライプ） -->
     <div class="page-edge"></div>
 
-    <!-- 🌹 2つの栞をまとめる枠 -->
+    <!-- 2つの栞をまとめる枠 -->
     <div class="bookmarks-wrapper">
-      
-      <!-- 栞1：記憶を辿る -->
       <label class="bookmark-container">
         <div class="bookmark">記憶を辿る</div>
         <input type="date" id="calendar-picker" onchange="travelToDate()">
       </label>
-
-      <!-- 栞2：手帳を閉じる（エントランスへ戻る） -->
-      <!-- 👇 class="bookmark-container" を追加！ -->
       <a href="index.html" class="bookmark-container" style="text-decoration: none;" onclick="closeDiary(event)">
         <div class="bookmark" style="background-color: #3b2f2f;">手帳を閉じる</div>
       </a>
-
     </div>
 
-    <!-- 日記の中身（データが来たら表示される） -->
     <div id="diary-content">
       <div class="diary-header">
         <div class="diary-date" id="display-date">2026年7月15日</div>
       </div>
 
-      <!-- プロファイリング -->
+      <!-- 本日の記録（一番上にしました） -->
+      <div class="section-title">本日の記録</div>
+      <div id="display-records"></div>
+
+      <!-- 写真セクション -->
+      <div class="section-title">共有された景色</div>
+      <div id="display-photos-wrapper"></div>
+
+      <!-- 🌹 前夜のプロファイリング（一番下に移動しました） -->
       <div class="section-title">前夜のプロファイリング</div>
       <div class="ruled-text" id="display-profile">
         <p>読み込み中...</p>
       </div>
-
-      <!-- 本日の記録（付箋が追加される場所） -->
-      <div class="section-title">本日の記録</div>
-      <div id="display-records">
-        <!-- JavaScriptでここに付箋が自動生成されます -->
-      </div>
-
-      <!-- 写真セクション -->
-      <div class="section-title">共有された景色</div>
-      <!-- この空箱だけを残す！JSがここに写真を入れてくれます -->
-      <div id="display-photos-wrapper"></div>
     </div> <!-- /#diary-content -->
 
-  </div> <!-- 🌹 犯人はコイツ！一番下に移動させて、ちゃんとノートの中に全てを収めました -->
+  </div>
 
   <!-- 🌹 ここからAPI連携用のJavaScript -->
   <script>
-    // ★★★ 後でここにGASのWebアプリURLを貼ります ★★★
     const GAS_URL = "https://script.google.com/macros/s/AKfycbx2zzigIKZxyzyhoOlBzhEhdDkrNfLJv8DVNHvyHO7VaHKD4GqulApRdOrxCkIVvoz8/exec?action=get_diary"; 
 
     let currentDisplayedDate = new Date(); 
-
-    // 最初は今日の日記を読み込む
     fetchDiaryData(); 
 
-    // ローディングをなくし、裏で取得してからペラッとめくるように変更！
     async function fetchDiaryData(dateStr = "", direction = "page-turn-back") {
       try {
         let fetchUrl = GAS_URL;
-        if (dateStr) {
-          fetchUrl += "&date=" + dateStr; 
-        }
+        if (dateStr) fetchUrl += "&date=" + dateStr; 
 
-        // データを裏でこっそり取得（この間、画面は今のページのまま）
         const response = await fetch(fetchUrl);
         const data = await response.json();
         
-        // 取得完了！ペラッとめくる！
-        renderDiary(data, direction); 
+        renderDiary(data); 
       } catch (error) {
         console.error("記憶の読み込みに失敗しました");
       }
     }
 
-    // しおり（カレンダー）から日付を選んだ時の処理
+    // 🌹 しおり（カレンダー）から日付を選んだ時の処理
     function travelToDate() {
       const selectedDateStr = document.getElementById("calendar-picker").value;
       if (selectedDateStr) {
         const selectedDate = new Date(selectedDateStr);
-        let turnDirection = "page-turn-back"; 
-        if (selectedDate > currentDisplayedDate) {
-          turnDirection = "page-turn-forward";
-        }
+        let turnDirection = selectedDate > currentDisplayedDate ? "page-turn-forward" : "page-turn-back";
         currentDisplayedDate = selectedDate; 
+        
+        triggerPageAnimation(turnDirection); // 先にめくる！
         fetchDiaryData(selectedDateStr, turnDirection);
       }
     }
 
-    // スワイプで前後の日に移動する魔法
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    document.addEventListener('touchstart', e => {
-      touchStartX = e.changedTouches[0].screenX;
-    });
-
-    document.addEventListener('touchend', e => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipe();
-    });
-
-    function handleSwipe() {
-      const swipeDistance = touchEndX - touchStartX;
-      
-      if (swipeDistance > 60) {
-        turnPage(-1); // 右スワイプ
-      } else if (swipeDistance < -60) {
-        turnPage(1); // 左スワイプ
-      }
-    }
-
+    // 🌹 矢印ボタンを押した時の処理
     function turnPage(days) {
       const targetDate = new Date(currentDisplayedDate);
       targetDate.setDate(targetDate.getDate() + days);
@@ -365,16 +354,29 @@
 
       const turnDirection = days < 0 ? "page-turn-back" : "page-turn-forward";
       currentDisplayedDate = targetDate;
+
+      triggerPageAnimation(turnDirection); // 先にめくる！
       fetchDiaryData(dateStr, turnDirection);
     }
 
-    function renderDiary(data, direction) {
+    // 🌹 【追加】タップした瞬間にアニメーションを発動させる関数
+    function triggerPageAnimation(direction) {
       const contentDiv = document.getElementById("diary-content");
-      contentDiv.style.display = "block";
-
+      
+      // アニメーションを再起動
       contentDiv.classList.remove("page-turn-back", "page-turn-forward");
       void contentDiv.offsetWidth; 
       contentDiv.classList.add(direction);
+
+      // 取得完了まで中身を一旦「読み込み中」にしておく
+      document.getElementById("display-profile").innerHTML = "<p>記憶を辿っています...</p>";
+      document.getElementById("display-records").innerHTML = "";
+      document.getElementById("display-photos-wrapper").innerHTML = "";
+    }
+
+    function renderDiary(data) {
+      const contentDiv = document.getElementById("diary-content");
+      contentDiv.style.display = "block";
 
       document.getElementById("display-date").innerText = data.date;
       document.getElementById("display-profile").innerHTML = data.profile;
@@ -412,12 +414,10 @@
       });
     }
 
-    // 🌹 「手帳を閉じる」を押した時の処理
     function closeDiary(event) {
-      event.preventDefault(); // すぐにエントランスに戻るのを防ぐ
-      document.body.classList.add('zoom-out-close'); // ズームアウト開始！
+      event.preventDefault(); 
+      document.body.classList.add('zoom-out-close'); 
       
-      // 0.6秒後にエントランスへ移動
       setTimeout(() => {
         window.location.href = 'index.html';
       }, 600);
