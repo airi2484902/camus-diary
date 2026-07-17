@@ -322,10 +322,15 @@
       void contentDiv.offsetWidth; 
       contentDiv.classList.add(direction);
 
+      // 🌹 【ここを追加！】ボタンを押した瞬間に古い記憶をすべて消して「白紙」にする
+      document.getElementById("display-date").innerText = ""; 
+      document.getElementById("display-records").innerHTML = ""; 
+      document.getElementById("display-photos-wrapper").innerHTML = ""; 
+      document.getElementById("display-profile").innerHTML = ""; 
+
       const loader = document.getElementById("loading-overlay");
       if (loader) loader.style.opacity = "1";
     }
-
     function renderDiary(data) {
       const contentDiv = document.getElementById("diary-content");
       contentDiv.style.display = "block";
